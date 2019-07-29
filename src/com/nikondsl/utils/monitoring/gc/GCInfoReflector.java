@@ -52,7 +52,7 @@ public class GCInfoReflector {
     }
     if (attempt==1) {
       String ticks = "\nTicks: " + gcInfoBlock.getCompacted() + " (" +
-                     DateUtils.getRemainingTime(Locale.ENGLISH, 0L, gcInfoBlock.getCompacted() * 1000L, 2);
+                     DateUtils.getRemainingTime(Locale.ENGLISH, 0L, (long)(gcInfoBlock.getCompacted() * 1000.0), 2);
       return "<img src='"+TRANSPARENT_1x1_IMAGE_SOURCE+"' width='" + (2 + 2 * gcInfoBlock.getCompacted()) +
              "' height='2' style='background-color:blue' " +
              "alt='" + getTime(gcInfoBlock.getTime()) + ticks + ")' " +

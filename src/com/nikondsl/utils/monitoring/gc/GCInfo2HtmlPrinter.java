@@ -8,11 +8,12 @@ import java.lang.management.ManagementFactory;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class GCInfo2HtmlPrinter {
     public String getHtml() {
 
-        GCInfoCollector collector = GCInfoCollector.getGCInfoCollector();
+        GCInfoCollector collector = GCInfoCollector.getGCInfoCollector(TimeUnit.SECONDS.toMillis(10));
         List<GCInfoBlock> all = collector.getAll();
         GCInfoReflector reflector = new GCInfoReflector();
 
@@ -32,9 +33,9 @@ public class GCInfo2HtmlPrinter {
         double percRed = 100.0 * (totalMemory - freeMemory) / maxMemory;
         result.append("<div class='current_memory'><p>Current memory usage:</p>");
 
-        result.append("<p>Max Java memory (-Xmx): <B>"+ConvertionUtils.convertToString(ComputerBytesConverter.createConverter(), maxMemory, 2)+"</B><br>");
-        result.append("Total memory: <B>"+ConvertionUtils.convertToString(ComputerBytesConverter.createConverter(), totalMemory, 2)+"</B><br>");
-        result.append("Free allocated memory: <B>"+ConvertionUtils.convertToString(ComputerBytesConverter.createConverter(), freeMemory, 2)+"</B><br>");
+        result.append("<p>Max Java memory (-Xmx): <b>"+ConvertionUtils.convertToString(ComputerBytesConverter.createConverter(), maxMemory, 2)+"</b><br>");
+        result.append("Total memory: <b>"+ConvertionUtils.convertToString(ComputerBytesConverter.createConverter(), totalMemory, 2)+"</b><br>");
+        result.append("Free allocated memory: <b>"+ConvertionUtils.convertToString(ComputerBytesConverter.createConverter(), freeMemory, 2)+"</b><br>");
         result.append("Used memory: <b style='color:red;'>"+ConvertionUtils.convertToString(ComputerBytesConverter.createConverter(), (totalMemory - freeMemory), 2)+"</b></p>");
 
         result.append("<p><table style='width: 100%; height:10px; border: 1px solid black;' cellpadding='1' cellspacing='0'>\n<tr>");
@@ -53,13 +54,13 @@ public class GCInfo2HtmlPrinter {
                     reflector.getImage(info, reflector.getBlockPixelsCount(Percentage.Green, info.getMaxMemory(), info.getUsedMemory()), Percentage.Green, 3) +
                     "\n</td>");
         }
-        result.append("<td width=99% valign=bottom colspan=\"3\">&nbsp;</td>");
+        result.append("<td width='99%' valign='bottom' colspan='3'>&nbsp;</td>");
         result.append("</tr></table></p></div>");
         return result.toString();
     }
 
     public static void main(String[] args) throws InterruptedException {
-        GCInfoCollector.getGCInfoCollector();
+        GCInfoCollector.getGCInfoCollector(TimeUnit.SECONDS.toMillis(10));
         int max = 100;
         double[][] arr = new double[max][];
         for (int i=0; i< max; i++) {
