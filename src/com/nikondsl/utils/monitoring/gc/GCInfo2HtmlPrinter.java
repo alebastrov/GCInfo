@@ -44,7 +44,8 @@ public class GCInfo2HtmlPrinter {
         result.append("</tr>\n</table></p></div>");
 
         //vertical GC bars
-        result.append("<div class='current_gc'><p>Current GC statistics:</p><p> <table width='100%' align='center' cellpadding='1' cellspacing='0' height='400' " +
+        result.append("<div class='current_gc'><p>Current GC statistics:</p><p>Events recorded: <b>"+all.size()
+                +"</b></p><p> <table width='100%' align='center' cellpadding='1' cellspacing='0' height='400' " +
                 "style='border-color:gray; border-style: solid; border-width: 1px'><tr>");
         for (GCInfoBlock info :  all) {
             result.append("<td width='3' valign='bottom'>\n" +
