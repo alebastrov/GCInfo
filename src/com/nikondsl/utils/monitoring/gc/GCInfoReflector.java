@@ -79,20 +79,20 @@ public class GCInfoReflector {
 
     StringBuilder res = new StringBuilder(100);
     res.append(gcInfoBlock.getGCName()).append("\n");
-    res.append(" Free Mem: ")
+    res.append("Memory freed: ")
         .append(formatMemoryNumber(gcInfoBlock.getMaxMemory() - gcInfoBlock.getUsedMemory()))
-        .append(" of ")
+        .append(" (of ")
         .append(formatMemoryNumber(gcInfoBlock.getMaxMemory()))
-        .append("\n");
+        .append(")\n");
 
-    res.append(" Cnt: ")
+    res.append(" Count: ")
         .append(gcInfoBlock.getCallNumber())
         .append("\n");
     res.append(" Time: ")
         .append(DateUtils.getRemainingTime(Locale.ENGLISH, 0L, gcInfoBlock.getDuration(), 3))
         .append("\n");
 
-    res.append(" Msg: ")
+    res.append(" ")
         .append(gcInfoBlock.getTenuredGenString())
         .append("\n");
 
