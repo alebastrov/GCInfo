@@ -1,6 +1,6 @@
 package com.nikondsl.utils.monitoring.gc;
 
-import com.nikondsl.utils.convertions.ComputerBytesConvertor;
+import com.nikondsl.utils.convertions.ComputerBytesConverter;
 import com.nikondsl.utils.convertions.ConvertionUtils;
 import com.nikondsl.utils.date.DateUtils;
 
@@ -32,10 +32,10 @@ public class GCInfo2HtmlPrinter {
         double percRed = 100.0 * (totalMemory - freeMemory) / maxMemory;
         result.append("<div class='current_memory'><p>Current memory usage:</p>");
 
-        result.append("<p>Max Java memory (-Xmx): <B>"+ConvertionUtils.convertToString(ComputerBytesConvertor.createConvertor(), maxMemory, 2)+"</B><br>");
-        result.append("Total memory: <B>"+ConvertionUtils.convertToString(ComputerBytesConvertor.createConvertor(), totalMemory, 2)+"</B><br>");
-        result.append("Free allocated memory: <B>"+ConvertionUtils.convertToString(ComputerBytesConvertor.createConvertor(), freeMemory, 2)+"</B><br>");
-        result.append("Used memory: <b style='color:red;'>"+ConvertionUtils.convertToString(ComputerBytesConvertor.createConvertor(), (totalMemory - freeMemory), 2)+"</b></p>");
+        result.append("<p>Max Java memory (-Xmx): <B>"+ConvertionUtils.convertToString(ComputerBytesConverter.createConverter(), maxMemory, 2)+"</B><br>");
+        result.append("Total memory: <B>"+ConvertionUtils.convertToString(ComputerBytesConverter.createConverter(), totalMemory, 2)+"</B><br>");
+        result.append("Free allocated memory: <B>"+ConvertionUtils.convertToString(ComputerBytesConverter.createConverter(), freeMemory, 2)+"</B><br>");
+        result.append("Used memory: <b style='color:red;'>"+ConvertionUtils.convertToString(ComputerBytesConverter.createConverter(), (totalMemory - freeMemory), 2)+"</b></p>");
 
         result.append("<p><table style='width: 100%; height:10px; border: 1px solid black;' cellpadding='1' cellspacing='0'>\n<tr>");
         result.append("\n<td style='background-color:red; width:"+percRed+ ";'></td>");

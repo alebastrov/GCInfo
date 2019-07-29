@@ -1,7 +1,7 @@
 package com.nikondsl.utils.monitoring.gc;
 
 
-import com.nikondsl.utils.convertions.ComputerBytesConvertor;
+import com.nikondsl.utils.convertions.ComputerBytesConverter;
 import com.nikondsl.utils.convertions.ConvertionUtils;
 import com.nikondsl.utils.date.DateUtils;
 import com.nikondsl.utils.date.SynchronizedDateFormat;
@@ -108,6 +108,6 @@ public class GCInfoReflector {
   }
 
   String formatMemoryNumber(long value) {
-    return ConvertionUtils.convertToString(ComputerBytesConvertor.createConvertor(), (double)value, 2);
+    return ConvertionUtils.convertToString(ComputerBytesConverter.createConverter(), (double)value, 2);
   }
 }
