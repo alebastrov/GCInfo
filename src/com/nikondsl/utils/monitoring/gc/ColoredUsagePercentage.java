@@ -1,12 +1,12 @@
 package com.nikondsl.utils.monitoring.gc;
 
-public enum Percentage {
+public enum ColoredUsagePercentage {
     Green("green", 50, 0), Yellow("yellow", 40, 50), Red("red", 10, 90);
     private int percents;
     private int eliminator;
     private String color;
 
-    Percentage(String color, int percents, int eliminator) {
+    ColoredUsagePercentage(String color, int percents, int eliminator) {
         this.color = color;
         this.percents = percents;
         this.eliminator = eliminator;

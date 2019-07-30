@@ -11,33 +11,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
-public class GCInfoCollector {
-  private static final MemoryUsage empty = new MemoryUsage(-1, 1, 1, 1);
-  private static GCInfoCollector collector;
-  private static Map<String,Long> collCount = new HashMap<String, Long>();
-  private static Map<String,Long> collDuration = new HashMap<String, Long>();
+public final class GCInfoCollector {
+  private static final MemoryUsage empty = new MemoryUsage(1, 1, 1, 1);
+  private static GCInfoCollector instance;
+  private static Map<String,Long> collCount = new HashMap<>();
+  private static Map<String,Long> collDuration = new HashMap<>();
 
   private int maxEventsCount = 300;
-  private ArrayDeque<GCInfoBlock> storage = new ArrayDeque<>(maxEventsCount);
-  private GCInfoBlock.Payloads lastGcState;
-  private List<GarbageCollectorMXBean> mbeans;
-  private BackgroundThread thread;
+  private ArrayDeque<GCInfoBlock> storage = null;
+  private volatile GCInfoBlock.Payloads lastGcState;
+  private BackgroundThread thread = null;
 
   public static synchronized GCInfoCollector getGCInfoCollector(long millis) {
-    if (collector == null) {
-      collector = new GCInfoCollector(millis);
+    if (instance == null) {
+      instance = new GCInfoCollector(millis);
     }
-    return collector;
+    return instance;
   }
 
   private GCInfoCollector(long millis) {
     this.thread = new BackgroundThread (
-            "GC Info Collector",
+            "GC Information Collector",
             millis,
             (Callable) () -> {
-        mbeans = ManagementFactory.getGarbageCollectorMXBeans();
+        List<GarbageCollectorMXBean> mbeans = ManagementFactory.getGarbageCollectorMXBeans();
         if (mbeans == null || mbeans.isEmpty()) return null;
         GCInfoBlock resInfoBlock = null;
         final long curTime = System.currentTimeMillis();
@@ -59,12 +57,12 @@ public class GCInfoCollector {
         }
         return null;
     });
-
+    setMaxEventsCount(maxEventsCount);
   }
 
-  private synchronized void addGc(GCInfoBlock resInfoBlock) {
-    Runtime r = Runtime.getRuntime();
-    resInfoBlock.setMemoryUsage(new MemoryUsage(-1, (r.totalMemory()-r.freeMemory()), r.totalMemory(),  r.maxMemory()));
+  private void addGc(GCInfoBlock resInfoBlock) {
+    Runtime runtime = Runtime.getRuntime();
+    resInfoBlock.setMemoryUsage(new MemoryUsage(-1, (runtime.totalMemory()-runtime.freeMemory()), runtime.totalMemory(),  runtime.maxMemory()));
     if (!storage.isEmpty()) {
       GCInfoBlock last = storage.getLast();
       long workTime = resInfoBlock.getTime() - last.getTime();
@@ -83,7 +81,7 @@ public class GCInfoCollector {
     if (storage.size() > maxEventsCount) storage.removeFirst();
   }
 
-  private synchronized GCInfoBlock createInfoBlock(GarbageCollectorMXBean mbean) {
+  private GCInfoBlock createInfoBlock(GarbageCollectorMXBean mbean) {
     final long currentCollectionCount = mbean.getCollectionCount();
     if (currentCollectionCount < 0L) return null;
     final long currentCollectionTime = mbean.getCollectionTime();
@@ -106,18 +104,6 @@ public class GCInfoCollector {
     return infoBlock;
   }
 
-  public GCInfoBlock getLastBlock() {
-    return storage.getLast();
-  }
-
-  public int getCount() {
-    return storage.size();
-  }
-
-  public synchronized List<GCInfoBlock> getAll() {
-    return new ArrayList<>(storage);
-  }
-
   private void addEmpty(long curTime) {
     GCInfoBlock last = !storage.isEmpty()?storage.getLast():null;
     if (last!=null && last.getCallNumber()==0 && last.getDuration()==0){
@@ -137,7 +123,26 @@ public class GCInfoCollector {
     return lastGcState;
   }
 
-  public void setMaxEventsCount(int maxEventsCount) {
+  public synchronized GCInfoBlock getLastBlock() {
+    return storage.getLast();
+  }
+
+  public synchronized int getCount() {
+    return storage.size();
+  }
+
+  public synchronized List<GCInfoBlock> getAll() {
+    return new ArrayList<>(storage);
+  }
+
+  public synchronized void setMaxEventsCount(int maxEventsCount) {
+    if (maxEventsCount<10) throw new IllegalArgumentException("Too small ("+maxEventsCount+") value for history (less than 10)");
     this.maxEventsCount = maxEventsCount;
+    ArrayDeque<GCInfoBlock> newStorage = new ArrayDeque<>(maxEventsCount);
+    if (storage != null && !storage.isEmpty()) {
+      newStorage.addAll(storage);
+      while (newStorage.size() > maxEventsCount) newStorage.removeFirst();
+    }
+    storage = newStorage;
   }
 }

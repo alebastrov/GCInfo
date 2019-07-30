@@ -1,0 +1,7 @@
+# Created by .ignore support plugin (hsz.mobi)
+.gitignore
+.idea/inspectionProfiles/
+.idea/sonarlint/
+.idea/workspace.xml
+out/
+src/com/company/

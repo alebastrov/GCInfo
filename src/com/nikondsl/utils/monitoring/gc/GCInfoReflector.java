@@ -20,7 +20,7 @@ import java.util.TimeZone;
 public class GCInfoReflector {
   private static final int TABLE_HEIGHT = 400;
   private static final SynchronizedDateFormat df = createDateFormat();
-  public final String TRANSPARENT_1x1_IMAGE_SOURCE = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
+  public static final String TRANSPARENT_1x1_IMAGE_SOURCE = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
 
   private static SynchronizedDateFormat createDateFormat() {
     final SynchronizedDateFormat format = new SynchronizedDateFormat("yyyy.MM.dd HH:mm:ss z");
@@ -30,27 +30,29 @@ public class GCInfoReflector {
 
   private static final long MAX_WIDTH = 20L;
 
-  public String getImage(GCInfoBlock gcInfoBlock, long amount, Percentage percentage, int attempt) {
+  public String getImage(GCInfoBlock gcInfoBlock, long amount, ColoredUsagePercentage coloredUsagePercentage, int attempt) {
     if (amount <= 0L) {
       return "";
     }
     if (gcInfoBlock.getDuration() > 0L) {
       final String color;
-      if (gcInfoBlock.getGcState() == GCInfoBlock.Payloads.OK) {
-        color = percentage.getColor();
+      if (gcInfoBlock.getGcState().ordinal() < GCInfoBlock.Payloads.HIGHLOAD.ordinal()) {
+        color = coloredUsagePercentage.getColor();
       }
       else if (gcInfoBlock.getGcState() == GCInfoBlock.Payloads.HIGHLOAD) {
         color = "grey";
       }
-      else {
+      else if (gcInfoBlock.getGcState() == GCInfoBlock.Payloads.SLOWDOWN) {
         color = "black";
+      } else {
+        color = "orange";
       }
       return "<img src='"+TRANSPARENT_1x1_IMAGE_SOURCE+"' width='" + getBlockWidth(gcInfoBlock.getDuration(), GCInfoBlock.getMaxDuration())
              + "' height='" + getHeight(amount) +"' style='background-color:" + color + "'" +
              " alt='"  + getTime(gcInfoBlock.getTime()) + "'" +
              " title='" + getAltText(gcInfoBlock) + getTime(gcInfoBlock.getTime()) + "' />";
     }
-    if (attempt==1) {
+    if (attempt == 1) {
       String ticks = "\nTicks: " + gcInfoBlock.getCompacted() + " (" +
                      DateUtils.getRemainingTime(Locale.ENGLISH, 0L, (long)(gcInfoBlock.getCompacted() * 1000.0), 2);
       return "<img src='"+TRANSPARENT_1x1_IMAGE_SOURCE+"' width='" + (2 + 2 * gcInfoBlock.getCompacted()) +
@@ -69,7 +71,7 @@ public class GCInfoReflector {
     return String.valueOf(amount);
   }
 
-  public int getBlockPixelsCount(Percentage type, double max, double value) {
+  public int getBlockPixelsCount(ColoredUsagePercentage type, double max, double value) {
     double percents = 100.0 * value / max;
     double realPixels = TABLE_HEIGHT * (percents - type.getEliminator()) / 100.0;
     return (int) Math.min(TABLE_HEIGHT * type.getPercents() / 100.0, realPixels);

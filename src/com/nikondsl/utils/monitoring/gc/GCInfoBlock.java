@@ -48,7 +48,6 @@ public class GCInfoBlock {
   private double compacted=1.0;
 
   public GCInfoBlock() {
-
   }
 
   public void setGCName(String GCName) {
