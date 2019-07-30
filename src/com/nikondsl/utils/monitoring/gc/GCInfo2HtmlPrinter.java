@@ -5,7 +5,6 @@ import com.nikondsl.utils.convertions.ConvertionUtils;
 import com.nikondsl.utils.date.DateUtils;
 
 import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryUsage;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -63,23 +62,29 @@ public class GCInfo2HtmlPrinter {
         String blackBar = getExampleImage("black", "reflects serious slowdown or STW of GC");
         String redBar = getExampleImage("red", "reflects slight slowdown or high amount of work for GC");
         String yellowBar = getExampleImage("yellow", "reflects GC is under pressure");
-        String greenBar = getExampleImage("green", "reflects idle of GC");
-        result.append("<br/><div class='gclegend'><u>GC legend</u><br/><table><tr>" +
+        String greenBar = getExampleImage("green", "reflects small GC job");
+        String smallGreenBar = getExampleImage("green", "",20, 10);
+        String blueBar = getExampleImage("blue", "reflects idle of GC", 20, 2);
+        result.append("<br/><div class='gclegend' id='gclegendid'><u>GC legend</u><br/><table><tr>" +
                 "<td width='20'>"+blackBar+"</td><td>GC initiates StopTheWorld or takes too long time</td></tr>" +
                 "<tr><td width='20'>"+redBar+"</td><td>GC takes too long time and under high pressure</td></tr>" +
                 "<tr><td width='20'>"+yellowBar+"</td><td>GC is under pressure</td></tr>" +
-                "<tr><td width='20'>"+greenBar+"</td><td>GC idles</td></tr>" +
-                "<tr><td width='4'>"+greenBar+"</td><td>Bar width depends on time of GC</td></tr>" +
-                "<tr><td width='20' height='10'>"+greenBar+"</td><td>Bar height depends on how much memory GC freed</td></tr>" +
+                "<tr><td width='20'>"+greenBar+"</td><td>GC does not a big deal amount of work</td></tr>" +
+                "<tr><td width='4'>"+blueBar+"</td><td>Bar width depends on how long GC takes</td></tr>" +
+                "<tr><td width='20' height='2'>"+blueBar+"</td><td>Blue bar reflects GC's NOP or idle</td></tr>" +
+                "<tr><td width='20' height='10'>"+smallGreenBar+"</td><td>Bar height depends on how much memory GC freed</td></tr>" +
                 "</table></div>");
         return result.toString();
     }
 
-    public String getExampleImage(String color, String title) {
-        return "<img src='"+GCInfoReflector.TRANSPARENT_1x1_IMAGE_SOURCE+"' width='20' height='20' " +
+    private String getExampleImage(String color, String title, int width, int height) {
+        return "<img src='"+GCInfoReflector.TRANSPARENT_1x1_IMAGE_SOURCE+"' width='"+width+"' height='"+height+"' " +
                 "style='background-color:" + color + "'" +
                 " alt='"+title+"'" +
                 " title='" + title + "' />";
+    }
+    private String getExampleImage(String color, String title) {
+        return getExampleImage(color, title, 20, 20);
     }
 
     public static void main(String[] args) throws InterruptedException {
