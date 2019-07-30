@@ -7,14 +7,14 @@ package com.nikondsl.utils.convertions;
  * Time: 12:58 PM
  * To change this template use File | Settings | File Templates.
  */
-public class KphConverter extends Converter {
-  private static final Converter CONVERTER = new KphConverter();
+public class KphConvertor extends Convertor {
+  private static final Convertor CONVERTOR = new KphConvertor();
 
-  private KphConverter() {
+  private KphConvertor() {
   }
 
-  public static Converter createConvertor() {
-    return CONVERTER;
+  public static Convertor createConvertor() {
+    return CONVERTOR;
   }
 
   @Override

@@ -11,7 +11,7 @@ import java.util.List;
  * Time: 10:38:34
  * To change this template use File | Settings | File Templates.
  */
-public abstract class Converter {
+public abstract class Convertor {
   protected static class Holder{
     private String namePlural;
     private double divider;

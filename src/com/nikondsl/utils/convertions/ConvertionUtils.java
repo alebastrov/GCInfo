@@ -10,31 +10,31 @@ package com.nikondsl.utils.convertions;
 public class ConvertionUtils {
   private ConvertionUtils(){}
 
-  public static String convertToString(final Converter converter, Double number, int blocks, boolean withWhiteSpice) {
-    if (converter ==null) throw new IllegalArgumentException();
-    if (number==null || number.isNaN()) throw new IllegalArgumentException("Cannot be null or NaN, but was "+number);
-    if (number<0.0) throw new IllegalArgumentException("Number should be more than 0, but was "+number);
+  public static String convertToString(final Convertor convertor, Double number, int blocks, boolean withWhiteSpice) {
+    if (convertor == null) throw new IllegalArgumentException();
+    if (number == null || number.isNaN()) throw new IllegalArgumentException("Cannot be null or NaN, but was "+number);
+    if (number < 0.0) throw new IllegalArgumentException("Number should be more than, or equals to  0, but was "+number);
     if (number.isInfinite()) return "Infinite";
-    if (number==0.0) return "0";
-    Converter.Names names= converter.getNames();
+    if (number == 0.0) return "0";
+    Convertor.Names names = convertor.getNames();
     //divide from max divider
     int count=1;
-    StringBuilder result=new StringBuilder(32);
-    for (int i=0; i<names.getNames().size(); i++){
-      Converter.Holder holder=names.getNames().get(i);
+    StringBuilder result = new StringBuilder(32);
+    for (int i = 0; i < names.getNames().size(); i++){
+      Convertor.Holder holder=names.getNames().get(i);
       double head=Math.floor(number.doubleValue()/holder.getDivider());
-      if (head<=0){
+      if (head <= 0) {
         continue;
       }
-      number=number-head*holder.getDivider();
+      number = number - head*holder.getDivider();
       result.append((long)head).append(withWhiteSpice ? " " : "").append((long)head==1?holder.getNameSingular():holder.getNamePlural()).append(" ");
-      if (blocks>0 && count>=blocks) break;
+      if (blocks > 0 && count >= blocks) break;
       count++;
     }
     return result.toString().trim();
   }
 
-  public static String convertToString(final Converter converter, Double number, int blocks) {
-    return convertToString(converter, number, blocks, true);
+  public static String convertToString(final Convertor convertor, Double number, int blocks) {
+    return convertToString(convertor, number, blocks, true);
   }
 }

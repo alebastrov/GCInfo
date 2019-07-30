@@ -20,7 +20,7 @@ public final class GCInfoCollector {
 
   private int maxEventsCount = 300;
   private ArrayDeque<GCInfoBlock> storage = null;
-  private volatile GCInfoBlock.Payloads lastGcState;
+  private volatile GCInfoBlock.Payloads lastGcState = GCInfoBlock.Payloads.OK;
   private BackgroundThread thread = null;
 
   public static synchronized GCInfoCollector getGCInfoCollector(long millis) {
@@ -127,7 +127,7 @@ public final class GCInfoCollector {
     return storage.getLast();
   }
 
-  public synchronized int getCount() {
+  public synchronized int getCurentSize() {
     return storage.size();
   }
 

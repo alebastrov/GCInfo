@@ -7,15 +7,15 @@ package com.nikondsl.utils.convertions;
  * Time: 10:41:09
  * To change this template use File | Settings | File Templates.
  */
-public class ComputerBytesConverter extends Converter {
-  private static final Converter CONVERTER = new ComputerBytesConverter();
+public class ComputerBytesConvertor extends Convertor {
+  private static final Convertor CONVERTOR = new ComputerBytesConvertor();
 
   public static final int KiB = 1024;
   public static final int MiB = KiB * KiB;
   public static final int GiB = MiB * KiB;
   public static final long TiB = (long) GiB * KiB;
 
-  private ComputerBytesConverter() {
+  private ComputerBytesConvertor() {
   }
 
   public Names getNames() {
@@ -28,7 +28,7 @@ public class ComputerBytesConverter extends Converter {
     return names;
   }
 
-  public static Converter createConverter() {
-    return CONVERTER;
+  public static Convertor getConvertor() {
+    return CONVERTOR;
   }
 }
