@@ -1,7 +1,7 @@
 package com.nikondsl.utils.monitoring.gc;
 
 
-import com.nikondsl.utils.convertions.ComputerBytesConvertor;
+import com.nikondsl.utils.convertions.ComputerBytesConverter;
 import com.nikondsl.utils.convertions.ConvertionUtils;
 import com.nikondsl.utils.date.DateUtils;
 import com.nikondsl.utils.date.SynchronizedDateFormat;
@@ -52,7 +52,7 @@ public class GCInfoReflector {
     }
     if (attempt==1) {
       String ticks = "\nTicks: " + gcInfoBlock.getCompacted() + " (" +
-                     DateUtils.getRemainingTime(Locale.ENGLISH, 0L, gcInfoBlock.getCompacted() * 1000L, 2);
+                     DateUtils.getRemainingTime(Locale.ENGLISH, 0L, (long)(gcInfoBlock.getCompacted() * 1000.0), 2);
       return "<img src='"+TRANSPARENT_1x1_IMAGE_SOURCE+"' width='" + (2 + 2 * gcInfoBlock.getCompacted()) +
              "' height='2' style='background-color:blue' " +
              "alt='" + getTime(gcInfoBlock.getTime()) + ticks + ")' " +
@@ -108,6 +108,6 @@ public class GCInfoReflector {
   }
 
   String formatMemoryNumber(long value) {
-    return ConvertionUtils.convertToString(ComputerBytesConvertor.createConvertor(), (double)value, 2);
+    return ConvertionUtils.convertToString(ComputerBytesConverter.createConverter(), (double)value, 2);
   }
 }

@@ -10,11 +10,11 @@ import java.lang.management.MemoryUsage;
  * To change this template use File | Settings | File Templates.
  */
 public class GCInfoBlock {
-  public int getCompacted() {
-    return (int)(2.0+2.0*Math.log(compacted));
+  public double getCompacted() {
+    return 2.0+2.0*Math.log(compacted);
   }
 
-  public void setCompacted(int compacted) {
+  public void setCompacted(double compacted) {
     this.compacted = compacted;
   }
 
@@ -45,7 +45,7 @@ public class GCInfoBlock {
   private long callNumber;
   private long duration;
   private Payloads gcState = Payloads.OK;
-  private int compacted=0;
+  private double compacted=1.0;
 
   public GCInfoBlock() {
 

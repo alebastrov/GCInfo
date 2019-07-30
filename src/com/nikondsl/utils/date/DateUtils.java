@@ -2,7 +2,7 @@ package com.nikondsl.utils.date;
 
 import com.nikondsl.utils.AppUtil;
 import com.nikondsl.utils.convertions.ConvertionUtils;
-import com.nikondsl.utils.convertions.DateConvertor;
+import com.nikondsl.utils.convertions.DateConverter;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -56,21 +56,21 @@ public class DateUtils {
             count--;
         }
         if (count > 0 && mm > 0) {
-            remain += mm + " " + getTranslation(locale, TIME_MAP_MINUTE, 0) + " ";//"min";
+            remain += mm + " " + getTranslation(locale, TIME_MAP_MINUTE, mm) + " ";//"min";
             count--;
         }
         if (count > 0 && ss > 0) {
-            remain += ss + " " + getTranslation(locale, TIME_MAP_SECOND, 0) + " ";//"sec";
+            remain += ss + " " + getTranslation(locale, TIME_MAP_SECOND, ss) + " ";//"sec";
         }
         if (yyyy + mmm + dd + hh + mm + ss == 0) {
             remain += (to - from) + " " + getTranslation(locale, TIME_MAP_MILISECOND, 0) + " ";//"ms";
         }
-        return remain;
+        return remain.trim();
     }
 
     public Map<String, Integer> getRemainTime(Date date) {
         Map<String, Integer> result = new HashMap<>();
-        String converted = ConvertionUtils.convertToString(DateConvertor.createConvertor(), Math.abs((getTime() - date.getTime()) / 1000.0), 0);
+        String converted = ConvertionUtils.convertToString(DateConverter.createConvertor(), Math.abs((getTime() - date.getTime()) / 1000.0), 0);
         String[] str = converted.split("\\s+", 0);
         int number;
         int i = 0;
@@ -106,7 +106,7 @@ public class DateUtils {
             Map<String, String> transMap = translations.get(loc);
             if (transMap == null) transMap = translations.get(Locale.US);
             if ((loc == Locale.ENGLISH || loc == Locale.US || loc == Locale.UK) && number > 1) {
-                return transMap.get(key) + "s";
+                return transMap.get(key) + (key==TIME_MAP_MINUTE || key==TIME_MAP_SECOND?"":"s");
             }
             return transMap.get(key);
         }
@@ -137,5 +137,6 @@ public class DateUtils {
 
     static {
         addTranslation(Locale.ENGLISH, new String[]{"year", "month", "day", "hour", "min", "sec", "ms"});
+        addTranslation(Locale.forLanguageTag("ru"), new String[]{"год", "месяц", "день", "час", "мин", "сек", "миллисек"});
     }
 }

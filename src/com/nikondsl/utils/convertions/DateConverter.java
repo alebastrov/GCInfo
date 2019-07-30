@@ -7,8 +7,8 @@ package com.nikondsl.utils.convertions;
  * Time: 11:06:22
  * Use seconds
  */
-public class DateConvertor extends Convertor {
-  private static final Convertor convertor = new DateConvertor();
+public class DateConverter extends Converter {
+  private static final Converter CONVERTER = new DateConverter();
   private static final double secondsInYear = 525948.766 * 60.0;
   private static final double secondsInMonth = 43829.0639 * 60.0;
   private static final double secondsInDay = 24.0 * 3600.0;
@@ -25,7 +25,7 @@ public class DateConvertor extends Convertor {
     return names;
   }
 
-  public static Convertor createConvertor() {
-    return convertor;
+  public static Converter createConvertor() {
+    return CONVERTER;
   }
 }

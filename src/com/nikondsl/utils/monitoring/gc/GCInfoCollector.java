@@ -25,17 +25,17 @@ public class GCInfoCollector {
   private List<GarbageCollectorMXBean> mbeans;
   private BackgroundThread thread;
 
-  public static synchronized GCInfoCollector getGCInfoCollector() {
+  public static synchronized GCInfoCollector getGCInfoCollector(long millis) {
     if (collector == null) {
-      collector = new GCInfoCollector();
+      collector = new GCInfoCollector(millis);
     }
     return collector;
   }
 
-  private GCInfoCollector() {
+  private GCInfoCollector(long millis) {
     this.thread = new BackgroundThread (
             "GC Info Collector",
-            TimeUnit.SECONDS.toMillis(10),
+            millis,
             (Callable) () -> {
         mbeans = ManagementFactory.getGarbageCollectorMXBeans();
         if (mbeans == null || mbeans.isEmpty()) return null;
