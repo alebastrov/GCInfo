@@ -69,8 +69,8 @@ public class GCInfo2HtmlPrinter {
                 "<tr><td width='20'>"+redBar+"</td><td>GC takes too long time and under high pressure</td></tr>" +
                 "<tr><td width='20'>"+yellowBar+"</td><td>GC is under pressure</td></tr>" +
                 "<tr><td width='20'>"+greenBar+"</td><td>GC idles</td></tr>" +
-                "<tr><td width='20'></td><td>Bar width depends on time of GC</td></tr>" +
-                "<tr><td width='20'></td><td>Bar height depends on how much memory GC freed</td></tr>" +
+                "<tr><td width='4'>"+greenBar+"</td><td>Bar width depends on time of GC</td></tr>" +
+                "<tr><td width='20' height='10'>"+greenBar+"</td><td>Bar height depends on how much memory GC freed</td></tr>" +
                 "</table></div>");
         return result.toString();
     }
