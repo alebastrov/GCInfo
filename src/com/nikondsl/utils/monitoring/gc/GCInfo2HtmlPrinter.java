@@ -66,11 +66,11 @@ public class GCInfo2HtmlPrinter {
         String greenBar = getExampleImage("green", "reflects idle of GC");
         result.append("<br/><div class='gclegend'><u>GC legend</u><br/><table><tr>" +
                 "<td width='20'>"+blackBar+"</td><td>GC initiates StopTheWorld or takes too long time</td></tr>" +
-                "<tr><td width='20>"+redBar+"</td><td>GC takes too long time and under high pressure</td></tr>" +
-                "<tr><td width='20>"+yellowBar+"</td><td>GC is under pressure</td></tr>" +
-                "<tr><td width='20>"+greenBar+"</td><td>GC idles</td></tr>" +
-                "<tr><td width='20></td><td>Bar width depends on time of GC</td></tr>" +
-                "<tr><td width='20></td><td>Bar height depends on how much memory GC freed</td></tr>" +
+                "<tr><td width='20'>"+redBar+"</td><td>GC takes too long time and under high pressure</td></tr>" +
+                "<tr><td width='20'>"+yellowBar+"</td><td>GC is under pressure</td></tr>" +
+                "<tr><td width='20'>"+greenBar+"</td><td>GC idles</td></tr>" +
+                "<tr><td width='20'></td><td>Bar width depends on time of GC</td></tr>" +
+                "<tr><td width='20'></td><td>Bar height depends on how much memory GC freed</td></tr>" +
                 "</table></div>");
         return result.toString();
     }
