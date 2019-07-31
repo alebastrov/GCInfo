@@ -1,6 +1,6 @@
 package com.nikondsl.utils.monitoring.gc;
 
-import com.nikondsl.utils.convertions.ComputerBytesConvertor;
+import com.nikondsl.utils.convertions.ConvertorType;
 import com.nikondsl.utils.convertions.ConvertionUtils;
 import com.nikondsl.utils.date.DateUtils;
 
@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 public class GCInfo2HtmlPrinter {
 
-    public String getHtml() {
+    public String getHtml() throws Exception {
 
         GCInfoCollector collector = GCInfoCollector.getGCInfoCollector(TimeUnit.SECONDS.toMillis(10));
         List<GCInfoBlock> all = collector.getAll();
@@ -34,10 +34,10 @@ public class GCInfo2HtmlPrinter {
         double percRed = 100.0 * (totalMemory - freeMemory) / maxMemory;
         result.append("<div class='currentmemory'><p><u>Current memory</u></p>");
 
-        result.append("<p>Max Java memory (-Xmx): <b>"+ConvertionUtils.convertToString(ComputerBytesConvertor.getConvertor(), maxMemory, 2)+"</b><br>");
-        result.append("Total memory: <b>"+ConvertionUtils.convertToString(ComputerBytesConvertor.getConvertor(), totalMemory, 2)+"</b><br>");
-        result.append("Free allocated memory: <b>"+ConvertionUtils.convertToString(ComputerBytesConvertor.getConvertor(), freeMemory, 2)+"</b><br>");
-        result.append("Used memory: <b style='color:red;'>"+ConvertionUtils.convertToString(ComputerBytesConvertor.getConvertor(), (totalMemory - freeMemory), 2)+"</b></p>");
+        result.append("<p>Max Java memory (-Xmx): <b>"+ConvertionUtils.convertToString(ConvertorType.Long2ComputerBytes, maxMemory, 2)+"</b><br>");
+        result.append("Total memory: <b>"+ConvertionUtils.convertToString(ConvertorType.Long2ComputerBytes, totalMemory, 2)+"</b><br>");
+        result.append("Free allocated memory: <b>"+ConvertionUtils.convertToString(ConvertorType.Long2ComputerBytes, freeMemory, 2)+"</b><br>");
+        result.append("Used memory: <b style='color:red;'>"+ConvertionUtils.convertToString(ConvertorType.Long2ComputerBytes, (totalMemory - freeMemory), 2)+"</b></p>");
 
         result.append("<div class='memorytable'><table style='width:100%; height:10px; border:1px solid black;' cellpadding='1' cellspacing='0'>\n<tr>");
         result.append("\n<td style='background-color:red; width:"+percRed+ "%;'></td>");
@@ -88,7 +88,7 @@ public class GCInfo2HtmlPrinter {
         return getExampleImage(color, title, 20, 20);
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws Exception {
         GCInfoCollector.getGCInfoCollector(TimeUnit.SECONDS.toMillis(10));
         int max = 100;
         double[][] arr = new double[max][];

@@ -1,7 +1,7 @@
 package com.nikondsl.utils.monitoring.gc;
 
 
-import com.nikondsl.utils.convertions.ComputerBytesConvertor;
+import com.nikondsl.utils.convertions.ConvertorType;
 import com.nikondsl.utils.convertions.ConvertionUtils;
 import com.nikondsl.utils.date.DateUtils;
 import com.nikondsl.utils.date.SynchronizedDateFormat;
@@ -30,7 +30,7 @@ public class GCInfoReflector {
 
   private static final long MAX_WIDTH = 20L;
 
-  public String getImage(GCInfoBlock gcInfoBlock, long amount, ColoredUsagePercentage coloredUsagePercentage, int attempt) {
+  public String getImage(GCInfoBlock gcInfoBlock, long amount, ColoredUsagePercentage coloredUsagePercentage, int attempt) throws Exception {
     if (amount <= 0L) {
       return "";
     }
@@ -77,7 +77,7 @@ public class GCInfoReflector {
     return (int) Math.min(TABLE_HEIGHT * type.getPercents() / 100.0, realPixels);
   }
 
-  private String getAltText(GCInfoBlock gcInfoBlock) {
+  private String getAltText(GCInfoBlock gcInfoBlock) throws Exception {
 
     StringBuilder res = new StringBuilder(100);
     res.append(gcInfoBlock.getGCName()).append("\n");
@@ -109,7 +109,7 @@ public class GCInfoReflector {
     return res.toString();
   }
 
-  String formatMemoryNumber(long value) {
-    return ConvertionUtils.convertToString(ComputerBytesConvertor.getConvertor(), (double)value, 2);
+  String formatMemoryNumber(long value) throws Exception {
+    return ConvertionUtils.convertToString(ConvertorType.Long2ComputerBytes, (double)value, 2);
   }
 }

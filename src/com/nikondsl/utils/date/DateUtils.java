@@ -1,8 +1,8 @@
 package com.nikondsl.utils.date;
 
 import com.nikondsl.utils.AppUtil;
+import com.nikondsl.utils.convertions.ConvertorType;
 import com.nikondsl.utils.convertions.ConvertionUtils;
-import com.nikondsl.utils.convertions.DateConvertor;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -28,7 +28,7 @@ public class DateUtils {
      * @param to    long - must be in UTC timezone
      * @param count int @return String
      */
-    public static String getRemainingTime(Locale locale, long from, long to, int count) {
+    public static String getRemainingTime(Locale locale, long from, long to, int count) throws Exception {
         DateUtils sd = new DateUtils();
         sd.setTime(to);
         Map<String, Integer> remTimeMap = sd.getRemainTime(new java.util.Date(from));
@@ -68,9 +68,9 @@ public class DateUtils {
         return remain.trim();
     }
 
-    public Map<String, Integer> getRemainTime(Date date) {
+    public Map<String, Integer> getRemainTime(Date date) throws Exception {
         Map<String, Integer> result = new HashMap<>();
-        String converted = ConvertionUtils.convertToString(DateConvertor.getConvertor(), Math.abs((getTime() - date.getTime()) / 1000.0), 0);
+        String converted = ConvertionUtils.convertToString(ConvertorType.Millis2Date, Math.abs((getTime() - date.getTime()) / 1000.0), 0);
         String[] str = converted.split("\\s+", 0);
         int number;
         int i = 0;

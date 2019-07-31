@@ -28,8 +28,9 @@ public class BackgroundThread {
         thread.start();
     }
 
-    public void shutdown() {
+    public void shutdown() throws Exception {
         stop.set(true);
+        Thread.currentThread().sleep(1000);
         thread.interrupt();
     }
 

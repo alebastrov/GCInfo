@@ -1,4 +1,4 @@
-package com.nikondsl.utils.convertions;
+package com.nikondsl.utils.convertions.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +12,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class Convertor {
-  protected static class Holder{
+  public static class Holder{
     private String namePlural;
     private double divider;
     private String nameSingular;
@@ -36,12 +36,12 @@ public abstract class Convertor {
     }
   }
 
-  protected static class Names{
-    private List<Holder> names=new ArrayList<Holder>();
+  public static class Names {
+    private List<Holder> names=new ArrayList<>();
     protected void add(Holder holder){
       names.add(holder);
     }
-    List<Holder> getNames(){
+    public List<Holder> getNames(){
       return Collections.unmodifiableList(names);
     }
   }

@@ -1,9 +1,9 @@
- ## This small app ets you embed short memory & GC information page. 
+ ## This small app lets you embed information with short memory & GC status as well as graph of GC usage. 
  It returns HTML like reflects actual status of memory and GC (see example below).
  
 ![Ashampoo_Snap_2019 07 31_17h50m09s_040_](https://user-images.githubusercontent.com/6348292/62222264-be089300-b3bb-11e9-9c81-7e809b67f41e.png)
 
-Just put compiled files into /WEB-INF/classes and run
+Just put compiled files into /WEB-INF/classes and use
 ~~~
 new GCInfo2HtmlPrinter().getHtml();
 ~~~

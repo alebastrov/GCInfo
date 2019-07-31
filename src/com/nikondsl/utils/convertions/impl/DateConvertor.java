@@ -1,4 +1,4 @@
-package com.nikondsl.utils.convertions;
+package com.nikondsl.utils.convertions.impl;
 
 /**
  * Created by IntelliJ IDEA.

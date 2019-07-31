@@ -1,16 +1,26 @@
 package com.nikondsl.utils.convertions;
 
+import com.nikondsl.utils.convertions.utils.ConvertorBuilder;
+import com.nikondsl.utils.convertions.impl.Convertor;
+
 /**
  * Created by IntelliJ IDEA.
  * User: igor.nikonov
  * Date: 27 серп 2009
  * Time: 10:08:04
- * To change this template use File | Settings | File Templates.
+ * This class is start point of convertion:
+ * Usage:
+ *
+ * ConvertionUtils.convertToString(ConvertorType.Long2ComputerBytes, 1025, 2) will give you result '1 KiB 1 byte'
+ * ConvertionUtils.convertToString(ConvertorType.Millis2Date, 3661.0, 1) will give you result '1 hour'
+ * ConvertionUtils.convertToString(ConvertorType.Millis2Date, 3661.0, 2) will give you result '1 hour 1 minute'
+ * ConvertionUtils.convertToString(ConvertorType.Millis2Date, 3661.0, 3) will give you result '1 hour 1 minute 1 second'
+ * ConvertionUtils.convertToString(ConvertorType.Millis2Date, 3662.0, 3) will give you result '1 hour 1 minute 2 seconds'
  */
 public class ConvertionUtils {
   private ConvertionUtils(){}
 
-  public static String convertToString(final Convertor convertor, Double number, int blocks, boolean withWhiteSpice) {
+  private static String convertToString(final Convertor convertor, Double number, int blocks) {
     if (convertor == null) throw new IllegalArgumentException();
     if (number == null || number.isNaN()) throw new IllegalArgumentException("Cannot be null or NaN, but was "+number);
     if (number < 0.0) throw new IllegalArgumentException("Number should be more than, or equals to  0, but was "+number);
@@ -27,14 +37,19 @@ public class ConvertionUtils {
         continue;
       }
       number = number - head*holder.getDivider();
-      result.append((long)head).append(withWhiteSpice ? " " : "").append((long)head==1?holder.getNameSingular():holder.getNamePlural()).append(" ");
+      result.append((long)head).append(" ").append((long)head==1?holder.getNameSingular():holder.getNamePlural()).append(" ");
       if (blocks > 0 && count >= blocks) break;
       count++;
     }
     return result.toString().trim();
   }
+  
+  public static String convertToString(final ConvertorType convertorType, Double number) throws Exception {
+    return convertToString(convertorType, number, 2);
+  }
 
-  public static String convertToString(final Convertor convertor, Double number, int blocks) {
-    return convertToString(convertor, number, blocks, true);
+  public static String convertToString(final ConvertorType convertorType, Double number, int blocks) throws Exception {
+    Convertor convertor = ConvertorBuilder.create(convertorType);
+    return convertToString(convertor, number, blocks);
   }
 }

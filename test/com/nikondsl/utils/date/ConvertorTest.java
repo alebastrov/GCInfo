@@ -1,18 +1,16 @@
 package com.nikondsl.utils.date;
 
 
-import com.nikondsl.utils.convertions.ComputerBytesConvertor;
-import com.nikondsl.utils.convertions.Convertor;
+import com.nikondsl.utils.convertions.ConvertorType;
 import com.nikondsl.utils.convertions.ConvertionUtils;
-import com.nikondsl.utils.convertions.HumanBytesConvertor;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ConvertorTest {
 	@Test
-	public void testComputer() {
-		Convertor convertor = ComputerBytesConvertor.getConvertor();
+	public void testComputer() throws Exception {
+		ConvertorType convertor = ConvertorType.Long2ComputerBytes;
 		assertEquals("1 byte", ConvertionUtils.convertToString(convertor, 1.0,2));
 		assertEquals("123 bytes", ConvertionUtils.convertToString(convertor, 123.0,2));
 		assertEquals("1 KiB 210 bytes", ConvertionUtils.convertToString(convertor, 1234.0,2));
@@ -24,8 +22,8 @@ public class ConvertorTest {
 	}
 	
 	@Test
-	public void testHuman() {
-		Convertor convertor = HumanBytesConvertor.getConvertor();
+	public void testHuman() throws Exception {
+		ConvertorType convertor = ConvertorType.Long2HumanBytes;
 		assertEquals("1 byte", ConvertionUtils.convertToString(convertor, 1.0,2));
 		assertEquals("123 bytes", ConvertionUtils.convertToString(convertor, 123.0,2));
 		assertEquals("1 KB 234 bytes", ConvertionUtils.convertToString(convertor, 1234.0,2));
