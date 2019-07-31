@@ -30,8 +30,8 @@ public class ConvertionUtils {
     //divide from max divider
     int count=1;
     StringBuilder result = new StringBuilder(32);
-    for (int i = 0; i < names.getNames().size(); i++){
-      Convertor.Holder holder=names.getNames().get(i);
+    for (int i = 0; i < names.getNameHolders().size(); i++){
+      Convertor.Holder holder=names.getNameHolders().get(i);
       double head=Math.floor(number.doubleValue()/holder.getDivider());
       if (head <= 0) {
         continue;
@@ -48,7 +48,7 @@ public class ConvertionUtils {
     return convertToString(convertorType, number, 2);
   }
 
-  public static String convertToString(final ConvertorType convertorType, Double number, int blocks) throws Exception {
+  public static String convertToString(final ConvertorType convertorType, Double number, int blocks) throws ReflectiveOperationException {
     Convertor convertor = ConvertorBuilder.create(convertorType);
     return convertToString(convertor, number, blocks);
   }

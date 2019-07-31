@@ -40,30 +40,30 @@ public class DateUtils {
         int mm = AppUtil.getIntValue("" + remTimeMap.get(TIME_MAP_MINUTE));
         int ss = AppUtil.getIntValue("" + remTimeMap.get(TIME_MAP_SECOND));
         if (count > 0 && yyyy > 0) {
-            remain += yyyy + " " + getTranslation(locale, TIME_MAP_YEAR, yyyy) + " ";//"year"
+            remain += yyyy + " " + getTranslation(locale, TIME_MAP_YEAR, yyyy) + " ";
             count--;
         }
         if (count > 0 && mmm > 0) {
-            remain += "" + mmm + " " + getTranslation(locale, TIME_MAP_MONTH, mmm) + " ";//"month";
+            remain += "" + mmm + " " + getTranslation(locale, TIME_MAP_MONTH, mmm) + " ";
             count--;
         }
         if (count > 0 && dd > 0) {
-            remain += dd + " " + getTranslation(locale, TIME_MAP_DAY, dd) + " ";//"day";
+            remain += dd + " " + getTranslation(locale, TIME_MAP_DAY, dd) + " ";
             count--;
         }
         if (count > 0 && hh > 0) {
-            remain += hh + " " + getTranslation(locale, TIME_MAP_HOUR, hh) + " ";//"hour";
+            remain += hh + " " + getTranslation(locale, TIME_MAP_HOUR, hh) + " ";
             count--;
         }
         if (count > 0 && mm > 0) {
-            remain += mm + " " + getTranslation(locale, TIME_MAP_MINUTE, mm) + " ";//"min";
+            remain += mm + " " + getTranslation(locale, TIME_MAP_MINUTE, mm) + " ";
             count--;
         }
         if (count > 0 && ss > 0) {
-            remain += ss + " " + getTranslation(locale, TIME_MAP_SECOND, ss) + " ";//"sec";
+            remain += ss + " " + getTranslation(locale, TIME_MAP_SECOND, ss) + " ";
         }
         if (yyyy + mmm + dd + hh + mm + ss == 0) {
-            remain += (to - from) + " " + getTranslation(locale, TIME_MAP_MILISECOND, 0) + " ";//"ms";
+            remain += (to - from) + " " + getTranslation(locale, TIME_MAP_MILISECOND, 0) + " ";
         }
         return remain.trim();
     }
@@ -78,19 +78,19 @@ public class DateUtils {
             if (s.startsWith("year")) {
                 number = AppUtil.getIntValue(str[i - 1]);
                 result.put(TIME_MAP_YEAR, number);
-            } else if (s.startsWith("month")) {
+            } else if (s.startsWith(TIME_MAP_MONTH)) {
                 number = AppUtil.getIntValue(str[i - 1]);
                 result.put(TIME_MAP_MONTH, number);
-            } else if (s.startsWith("day")) {
+            } else if (s.startsWith(TIME_MAP_DAY)) {
                 number = AppUtil.getIntValue(str[i - 1]);
                 result.put(TIME_MAP_DAY, number);
-            } else if (s.startsWith("hour")) {
+            } else if (s.startsWith(TIME_MAP_HOUR)) {
                 number = AppUtil.getIntValue(str[i - 1]);
                 result.put(TIME_MAP_HOUR, number);
-            } else if (s.startsWith("minute")) {
+            } else if (s.startsWith(TIME_MAP_MINUTE)) {
                 number = AppUtil.getIntValue(str[i - 1]);
                 result.put(TIME_MAP_MINUTE, number);
-            } else if (s.startsWith("second")) {
+            } else if (s.startsWith(TIME_MAP_SECOND)) {
                 number = AppUtil.getIntValue(str[i - 1]);
                 result.put(TIME_MAP_SECOND, number);
             }
@@ -131,7 +131,7 @@ public class DateUtils {
         transMap.put(TIME_MAP_SECOND, translate[5]);
         transMap.put(TIME_MAP_MILISECOND, translate[6]);
         synchronized (translations) {
-            if (translations.get(locale) == null) translations.put(locale, transMap);
+            translations.computeIfAbsent(locale, loc -> transMap);
         }
     }
 

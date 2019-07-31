@@ -14,7 +14,7 @@ public class BackgroundThread {
             while (!stop.get()) {
                 try {
                     worker.call();
-                    Thread.currentThread().sleep(getNextSleepTime());
+                    Thread.sleep(getNextSleepTime());
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     break;
@@ -28,9 +28,9 @@ public class BackgroundThread {
         thread.start();
     }
 
-    public void shutdown() throws Exception {
+    public void shutdown() throws InterruptedException {
         stop.set(true);
-        Thread.currentThread().sleep(1000);
+        Thread.sleep(1000);
         thread.interrupt();
     }
 

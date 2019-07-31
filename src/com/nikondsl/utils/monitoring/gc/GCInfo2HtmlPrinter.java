@@ -52,9 +52,9 @@ public class GCInfo2HtmlPrinter {
                 "style='border-color:gray; border-style: solid; border-width: 1px'><tr>");
         for (GCInfoBlock info :  all) {
             result.append("<td width='3' valign='bottom'>\n" +
-                    reflector.getImage(info, reflector.getBlockPixelsCount(ColoredUsagePercentage.Red, info.getMaxMemory(), info.getUsedMemory()), ColoredUsagePercentage.Red, 1) +
-                    reflector.getImage(info, reflector.getBlockPixelsCount(ColoredUsagePercentage.Yellow, info.getMaxMemory(), info.getUsedMemory()), ColoredUsagePercentage.Yellow, 2) +
-                    reflector.getImage(info, reflector.getBlockPixelsCount(ColoredUsagePercentage.Green, info.getMaxMemory(), info.getUsedMemory()), ColoredUsagePercentage.Green, 3) +
+                    reflector.getImage(info, reflector.getBlockPixelsCount(ColoredUsagePercentage.RED, info.getMaxMemory(), info.getUsedMemory()), ColoredUsagePercentage.RED, 1) +
+                    reflector.getImage(info, reflector.getBlockPixelsCount(ColoredUsagePercentage.YELLOW, info.getMaxMemory(), info.getUsedMemory()), ColoredUsagePercentage.YELLOW, 2) +
+                    reflector.getImage(info, reflector.getBlockPixelsCount(ColoredUsagePercentage.GREEN, info.getMaxMemory(), info.getUsedMemory()), ColoredUsagePercentage.GREEN, 3) +
                     "\n</td>");
         }
         result.append("<td width='99%' valign='bottom' colspan='3'>&nbsp;</td>");
@@ -79,7 +79,7 @@ public class GCInfo2HtmlPrinter {
     }
 
     private String getExampleImage(String color, String title, int width, int height) {
-        return "<img src='"+GCInfoReflector.TRANSPARENT_1x1_IMAGE_SOURCE+"' width='"+width+"' height='"+height+"' " +
+        return "<img src='"+GCInfoReflector.TRANSPARENT_1X1_IMAGE_SOURCE +"' width='"+width+"' height='"+height+"' " +
                 "style='background-color:" + color + "'" +
                 " alt='"+title+"'" +
                 " title='" + title + "' />";

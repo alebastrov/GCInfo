@@ -20,7 +20,7 @@ import java.util.TimeZone;
 public class GCInfoReflector {
   private static final int TABLE_HEIGHT = 400;
   private static final SynchronizedDateFormat df = createDateFormat();
-  public static final String TRANSPARENT_1x1_IMAGE_SOURCE = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
+  public static final String TRANSPARENT_1X1_IMAGE_SOURCE = "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
 
   private static SynchronizedDateFormat createDateFormat() {
     final SynchronizedDateFormat format = new SynchronizedDateFormat("yyyy.MM.dd HH:mm:ss z");
@@ -47,7 +47,7 @@ public class GCInfoReflector {
       } else {
         color = "orange";
       }
-      return "<img src='"+TRANSPARENT_1x1_IMAGE_SOURCE+"' width='" + getBlockWidth(gcInfoBlock.getDuration(), GCInfoBlock.getMaxDuration())
+      return "<img src='"+ TRANSPARENT_1X1_IMAGE_SOURCE +"' width='" + getBlockWidth(gcInfoBlock.getDuration(), GCInfoBlock.getMaxDuration())
              + "' height='" + getHeight(amount) +"' style='background-color:" + color + "'" +
              " alt='"  + getTime(gcInfoBlock.getTime()) + "'" +
              " title='" + getAltText(gcInfoBlock) + getTime(gcInfoBlock.getTime()) + "' />";
@@ -55,7 +55,7 @@ public class GCInfoReflector {
     if (attempt == 1) {
       String ticks = "\nTicks: " + gcInfoBlock.getCompacted() + " (" +
                      DateUtils.getRemainingTime(Locale.ENGLISH, 0L, (long)(gcInfoBlock.getCompacted() * 1000.0), 2);
-      return "<img src='"+TRANSPARENT_1x1_IMAGE_SOURCE+"' width='" + (2 + 2 * gcInfoBlock.getCompacted()) +
+      return "<img src='"+ TRANSPARENT_1X1_IMAGE_SOURCE +"' width='" + (2 + 2 * gcInfoBlock.getCompacted()) +
              "' height='2' style='background-color:blue' " +
              "alt='" + getTime(gcInfoBlock.getTime()) + ticks + ")' " +
              "title='" + getTime(gcInfoBlock.getTime()) + ticks + ")' />";

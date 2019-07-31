@@ -12,7 +12,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class Convertor {
-  public static class Holder{
+  public static class Holder {
     private String namePlural;
     private double divider;
     private String nameSingular;
@@ -37,12 +37,12 @@ public abstract class Convertor {
   }
 
   public static class Names {
-    private List<Holder> names=new ArrayList<>();
+    private List<Holder> nameHolders =new ArrayList<>();
     protected void add(Holder holder){
-      names.add(holder);
+      nameHolders.add(holder);
     }
-    public List<Holder> getNames(){
-      return Collections.unmodifiableList(names);
+    public List<Holder> getNameHolders(){
+      return Collections.unmodifiableList(nameHolders);
     }
   }
   public abstract Names getNames();

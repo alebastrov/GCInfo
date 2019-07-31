@@ -50,8 +50,8 @@ public class GCInfoBlock {
   public GCInfoBlock() {
   }
 
-  public void setGCName(String GCName) {
-    this.gcName = GCName;
+  public void setGCName(String gcName) {
+    this.gcName = gcName;
   }
 
   public void setTime(long time) {

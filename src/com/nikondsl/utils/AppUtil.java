@@ -1,6 +1,9 @@
 package com.nikondsl.utils;
 
 public class AppUtil {
+    private AppUtil() {
+    }
+    
     public static int getIntValue(String value) {
         return getIntValue(value, 0);
     }
@@ -9,17 +12,13 @@ public class AppUtil {
         if (isStringEmpty(value)) {
             return defaultValue;
         }
-        if (value != null) {
-            value = value.trim();
-        }
+        value = value.trim();
         try {
             return Integer.parseInt(value);
         }
         catch (NumberFormatException ex) {
-//            throw new RuntimeException("Could not parse [" + value + "] as integer", ex);
             return defaultValue;
         }
-
     }
 
     public static boolean isStringEmpty(CharSequence src) {
