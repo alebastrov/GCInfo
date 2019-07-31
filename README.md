@@ -7,3 +7,10 @@ Just put compiled files into /WEB-INF/classes and run
 ~~~
 new GCInfo2HtmlPrinter().getHtml();
 ~~~
+
+What we can see here?
+
+There are bars on the image, each bar reflects GC job. The bar's height reflects how much memory GC freed, the bar's width reflects GC time taken for collecting, and color of the bar shows how % time GC took. The black bars on image reflects Stop-The-World or GC state near to it.
+
+
+Have fun!
