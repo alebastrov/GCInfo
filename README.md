@@ -13,9 +13,10 @@ What we can see here?
 There are bars on the image, each bar reflects GC job. The bar's height reflects how much memory GC freed, the bar's width reflects GC time taken for collecting, and color of the bar shows how % time GC took. The black bars on image reflects Stop-The-World or GC state near to it.
 
 
-#### Note: first run will show an empty image, because it started collecting GC since you've requested it. You may like to start collecting with starting your application, in that case please use with your start-up class
+#### Note: first run will show an empty image, because it will start collecting GC events right that moment. You may like to start collecting with starting your application, in that case please put initializer nelow in your start-up class
 ~~~
 GCInfoCollector.getGCInfoCollector(TimeUnit.SECONDS.toMillis(10));
 ~~~
+10 seconds is the update time period, so if you take image often than 10 seconds, it may look stale.
 
 Have fun!
