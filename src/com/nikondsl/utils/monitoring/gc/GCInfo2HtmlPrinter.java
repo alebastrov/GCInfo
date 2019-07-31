@@ -40,9 +40,9 @@ public class GCInfo2HtmlPrinter {
         result.append("Used memory: <b style='color:red;'>"+ConvertionUtils.convertToString(ComputerBytesConvertor.getConvertor(), (totalMemory - freeMemory), 2)+"</b></p>");
 
         result.append("<div class='memorytable'><table style='width:100%; height:10px; border:1px solid black;' cellpadding='1' cellspacing='0'>\n<tr>");
-        result.append("\n<td style='background-color:red; width:"+percRed+ ";'></td>");
-        result.append("\n<td style='background-color:white; width:"+(100.0-percGreen-percRed)+ ";'></td>");
-        result.append("\n<td style='background-color:green; width:"+percGreen+ ";'></td>");
+        result.append("\n<td style='background-color:red; width:"+percRed+ "%;'></td>");
+        result.append("\n<td style='background-color:white; width:"+(100.0-percGreen-percRed)+ "%;'></td>");
+        result.append("\n<td style='background-color:green; width:"+percGreen+ "%;'></td>");
         result.append("</tr>\n</table></div></div>");
 
         //vertical GC bars
@@ -64,14 +64,15 @@ public class GCInfo2HtmlPrinter {
         String yellowBar = getExampleImage("yellow", "reflects GC is under pressure");
         String greenBar = getExampleImage("green", "reflects small GC job");
         String smallGreenBar = getExampleImage("green", "",20, 10);
+        String narrowGreenBar = getExampleImage("green", "",4, 20);
         String blueBar = getExampleImage("blue", "reflects idle of GC", 20, 2);
         result.append("<br/><div class='gclegend' id='gclegendid'><u>GC legend</u><br/><table><tr>" +
                 "<td width='20'>"+blackBar+"</td><td>GC initiates StopTheWorld or takes too long time</td></tr>" +
                 "<tr><td width='20'>"+redBar+"</td><td>GC takes too long time and under high pressure</td></tr>" +
                 "<tr><td width='20'>"+yellowBar+"</td><td>GC is under pressure</td></tr>" +
                 "<tr><td width='20'>"+greenBar+"</td><td>GC does not a big deal amount of work</td></tr>" +
-                "<tr><td width='4'>"+blueBar+"</td><td>Bar width depends on how long GC takes</td></tr>" +
                 "<tr><td width='20' height='2'>"+blueBar+"</td><td>Blue bar reflects GC's NOP or idle</td></tr>" +
+                "<tr><td width='4'>"+narrowGreenBar+"</td><td>Bar width depends on how long GC takes</td></tr>" +
                 "<tr><td width='20' height='10'>"+smallGreenBar+"</td><td>Bar height depends on how much memory GC freed</td></tr>" +
                 "</table></div>");
         return result.toString();
