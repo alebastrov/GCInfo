@@ -1,5 +1,5 @@
- ## This small app lets you embed information with short memory & GC status as well as graph of GC usage. 
- It returns HTML like reflects actual status of memory and GC (see example below).
+ ## This small app lets you embed short information about memory consumption & GC status as well as graph of GC usage. 
+ It returns HTML which reflects actual status of memory and GC (see example below).
  
 ![Ashampoo_Snap_2019 07 31_17h50m09s_040_](https://user-images.githubusercontent.com/6348292/62222264-be089300-b3bb-11e9-9c81-7e809b67f41e.png)
 
