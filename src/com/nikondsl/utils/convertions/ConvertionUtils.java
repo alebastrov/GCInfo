@@ -30,16 +30,23 @@ public class ConvertionUtils {
     //divide from max divider
     int count=1;
     StringBuilder result = new StringBuilder(32);
-    for (int i = 0; i < names.getNameHolders().size(); i++){
+    int i = 0;
+    while (i < names.getNameHolders().size()) {
       Convertor.Holder holder=names.getNameHolders().get(i);
-      double head=Math.floor(number.doubleValue()/holder.getDivider());
+      double head = Math.floor(number / holder.getDivider());
       if (head <= 0) {
+        i++;
         continue;
       }
       number = number - head*holder.getDivider();
-      result.append((long)head).append(" ").append((long)head==1?holder.getNameSingular():holder.getNamePlural()).append(" ");
-      if (blocks > 0 && count >= blocks) break;
+      result.append((long)head).append(" ").append((long)head == 1
+              ? holder.getNameSingular()
+              : holder.getNamePlural()).append(" ");
+      if (blocks > 0 && count >= blocks) {
+        break;
+      }
       count++;
+      i++;
     }
     return result.toString().trim();
   }
