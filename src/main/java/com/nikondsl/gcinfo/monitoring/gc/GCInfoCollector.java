@@ -46,17 +46,39 @@ public final class GCInfoCollector {
           CompositeData compositeData = CompositeData.class.cast(notification.getUserData());
           GarbageCollectionNotificationInfo gcNotificationInfo = GarbageCollectionNotificationInfo.from(compositeData);
 
-          if (GC_NOTIFICATION_MINOR_GC_ACTION_STRING.equals(gcNotificationInfo.getGcAction())) {
-            addEmpty(gcNotificationInfo.getGcInfo().getDuration());
-          } else if (GC_NOTIFICATION_MAJOR_GC_ACTION_STRING.equals(gcNotificationInfo.getGcAction())) {
-            GCInfoBlock infoBlock = createInfoBlock2(gcNotificationInfo);
-            addGc(infoBlock);
-          }
+          GCInfoBlock infoBlock = createInfoBlock2(gcNotificationInfo);
+          addGc(infoBlock);
+
+//          if (GC_NOTIFICATION_MINOR_GC_ACTION_STRING.equals(gcNotificationInfo.getGcAction())) {
+//            addEmpty(gcNotificationInfo.getGcInfo().getDuration());
+//          } else if (GC_NOTIFICATION_MAJOR_GC_ACTION_STRING.equals(gcNotificationInfo.getGcAction())) {
+//            GCInfoBlock infoBlock = createInfoBlock2(gcNotificationInfo);
+//            addGc(infoBlock);
+//          }
         }
       }
 
       private GCInfoBlock createInfoBlock2(GarbageCollectionNotificationInfo gcNotificationInfo) {
-        return new GCInfoBlock();
+        final long currentCollectionCount = gcNotificationInfo.getGcInfo().getId();
+        if (currentCollectionCount < 0L) return null;
+        final long currentCollectionTime = gcNotificationInfo.getGcInfo().getDuration();
+        final long curTime = System.currentTimeMillis();
+
+        final String mbeanName = gcNotificationInfo.getGcName();
+
+        final Long storedCollCount = collCount.get(mbeanName);
+        final Long storedCollDuration = collDuration.get(mbeanName);
+        if (storedCollCount != null && currentCollectionCount < storedCollCount) return null;
+        collCount.put(mbeanName, currentCollectionCount);
+        collDuration.put(mbeanName, currentCollectionTime);
+        final GCInfoBlock infoBlock = new GCInfoBlock();
+        infoBlock.setGCName(mbeanName);
+        infoBlock.setTime(curTime);
+        infoBlock.setCallNumber(currentCollectionCount - (storedCollCount == null ? 0L : storedCollCount));
+        infoBlock.setDuration(currentCollectionTime - (storedCollDuration == null ? 0L : storedCollDuration));
+
+        if (infoBlock.getDuration() <= 0L) return null;
+        return infoBlock;
       }
     };
 
@@ -74,32 +96,32 @@ public final class GCInfoCollector {
       return;
     }
     attachListenerToGarbageCollector(mbeans);
-    this.thread = new BackgroundThread (
-            "GC Information Collector thread",
-            millis,
-            () -> {
-        attachListenerToGarbageCollector(mbeans);
-
-        GCInfoBlock resInfoBlock = null;
-        final long curTime = System.currentTimeMillis();
-        for (GarbageCollectorMXBean mbean : mbeans) {
-          final GCInfoBlock infoBlock = createInfoBlock(mbean);
-          if (infoBlock == null) continue;
-          if (resInfoBlock == null) {
-            resInfoBlock = infoBlock;
-          } else {
-            resInfoBlock.setGCName(resInfoBlock.getGCName() + " & " +infoBlock.getGCName());
-            resInfoBlock.setCallNumber(resInfoBlock.getCallNumber() + infoBlock.getCallNumber());
-            resInfoBlock.setDuration(resInfoBlock.getDuration() | infoBlock.getDuration());
-          }
-        }
-        if (resInfoBlock == null) {
-          addEmpty(curTime);
-        } else {
-          addGc(resInfoBlock);
-        }
-        return null;
-    });
+//    this.thread = new BackgroundThread (
+//            "GC Information Collector thread",
+//            millis,
+//            () -> {
+//        attachListenerToGarbageCollector(mbeans);
+//
+//        GCInfoBlock resInfoBlock = null;
+//        final long curTime = System.currentTimeMillis();
+//        for (GarbageCollectorMXBean mbean : mbeans) {
+//          final GCInfoBlock infoBlock = createInfoBlock(mbean);
+//          if (infoBlock == null) continue;
+//          if (resInfoBlock == null) {
+//            resInfoBlock = infoBlock;
+//          } else {
+//            resInfoBlock.setGCName(resInfoBlock.getGCName() + " & " +infoBlock.getGCName());
+//            resInfoBlock.setCallNumber(resInfoBlock.getCallNumber() + infoBlock.getCallNumber());
+//            resInfoBlock.setDuration(resInfoBlock.getDuration() | infoBlock.getDuration());
+//          }
+//        }
+//        if (resInfoBlock == null) {
+//          addEmpty(curTime);
+//        } else {
+//          addGc(resInfoBlock);
+//        }
+//        return null;
+//    });
     setMaxEventsCount(maxEventsCount);
   }
 
