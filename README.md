@@ -20,6 +20,6 @@ There are also lots of vertical bars like an image, each bar reflects GC job. Th
 ~~~
 GCInfoCollector.getGCInfoCollector(TimeUnit.SECONDS.toMillis(10));
 ~~~
-10 seconds is the update time period, so if you take image often than 10 seconds, it may look stale.
+10 seconds is the update time period, so if you take image often than 10 seconds, it may look frozen.
 
 Have fun!
