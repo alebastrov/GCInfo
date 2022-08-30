@@ -22,6 +22,49 @@ public class GCInfo2HtmlPrinter {
         List<GCInfoBlock> all = collector.getAll();
         GCInfoReflector reflector = new GCInfoReflector();
 
+        /**
+         * collector.gcNotificationInfo.getGcInfo().toCompositeData(null).get("xxx"), where "xxx"
+         *
+         * "0cThreadCount"
+         * "duration"
+         * "endTime"
+         * "id"
+         * "memoryUsageAfterGc"
+         * "memoryUsageBeforeGc"
+         * "startTime"
+         *
+         *
+         * for instance -> collector.gcNotificationInfo.getGcInfo().toCompositeData(null).get("memoryUsageAfterGc")
+         * ((TabularDataSupport) collector.gcNotificationInfo.getGcInfo().toCompositeData(null).get("memoryUsageAfterGc")).values().stream().map( cds -> ((CompositeDataSupport)cds).values().stream().map(map -> map.getClass()).collect(Collectors.toList())).collect(Collectors.toList());
+         *
+         * that returns a table AfterGC
+         * ((TabularDataSupport) collector.gcNotificationInfo.getGcInfo().toCompositeData(null).get("memoryUsageAfterGc")).values().stream().map( cds -> ((CompositeDataSupport)cds).values().stream()
+         *         .map(map -> {
+         *             if (map.getClass().isAssignableFrom(String.class)) {
+         *                 return map.toString();
+         *             }
+         *             return ((CompositeDataSupport)map).get("used");
+         *         })
+         *         .collect(Collectors.toList())).collect(Collectors.toList());
+         *
+         * !!!!!!!!!!for CMS GC:
+         *     "Compressed Class Space" -> 687096
+         *     "PS Survivor Space" -> 0
+         *     "PS Old Gen" -> 1263640
+         *     "Metaspace" -> 6315920
+         *     "PS Eden Space" -> 0
+         *     "Code Cache" -> 3962304
+         *
+         *  !!!!!!!!!!for ZGC:
+         *     "Compressed Class Space" -> 687096
+         *     "PS Survivor Space" -> 0
+         *     "PS Old Gen" -> 1263102
+         *     "Metaspace" -> 6314776
+         *     "PS Eden Space" -> 0
+         *     "Code Cache" -> 3962304
+         */
+
+
         StringBuilder result = new StringBuilder(1024);
         result.append("<div class='title'><title>GC Statistics - " + collector.getLastGcState() + "</title></div>");
         String color = collector.getLastGcState() == GCInfoBlock.Payloads.SLOWDOWN ? "red" : "green";
