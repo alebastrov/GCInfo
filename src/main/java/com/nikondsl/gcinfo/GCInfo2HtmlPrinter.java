@@ -25,7 +25,7 @@ public class GCInfo2HtmlPrinter {
         /**
          * collector.gcNotificationInfo.getGcInfo().toCompositeData(null).get("xxx"), where "xxx"
          *
-         * "0cThreadCount"
+         * "GcThreadCount"
          * "duration"
          * "endTime"
          * "id"

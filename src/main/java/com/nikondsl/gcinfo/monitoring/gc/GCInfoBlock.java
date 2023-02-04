@@ -46,8 +46,21 @@ public class GCInfoBlock {
   private long duration;
   private Payloads gcState = Payloads.OK;
   private double compacted=1.0;
+  private GcType type = GcType.STW;
+
+  enum GcType {
+    CONCURRENT, STW;
+  }
 
   public GCInfoBlock() {
+  }
+
+  public GcType getType() {
+    return type;
+  }
+
+  public void setType(GcType type) {
+    this.type = type;
   }
 
   public void setGCName(String gcName) {
