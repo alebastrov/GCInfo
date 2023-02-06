@@ -28,6 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -63,10 +64,10 @@ public final class GCInfoCollector {
       CompositeData compositeData = (CompositeData) notification.getUserData();
       GarbageCollectionNotificationInfo gcni = from(compositeData);
       GCInfoCollector.this.gcNotificationInfo = gcni;
-      System.out.printf("%d ms,\tname:%s\tcause:%s%n",
-              gcni.getGcInfo().getDuration(),
-              gcni.getGcName(),
-              gcni.getGcCause());
+//      System.out.printf("%d ms,\tname:%s\tcause:%s%n",
+//              gcni.getGcInfo().getDuration(),
+//              gcni.getGcName(),
+//              gcni.getGcCause());
       if ("end of minor GC".equals(gcni.getGcAction())) {
         GCInfoBlock infoBlock = createInfoBlock2(gcni);
         infoBlock.setType(guessGcType(gcni));
@@ -285,17 +286,21 @@ public final class GCInfoCollector {
     }
   }
   public static void main(String[] args) throws Exception {
-//    GCInfoCollector infoCollector = GCInfoCollector.getGCInfoCollector(1000);
+    final AtomicInteger cicleNumber = new AtomicInteger();
+    // to attach listener
+    GCInfoCollector infoCollector = GCInfoCollector.getGCInfoCollector(1000);
     Thread nagibatel = new Thread(()->{
       Map<Integer, ReferenceValue<byte[]>> map = new HashMap<>();
-      for (int i = 0; i < 100000; i++) {
-        map.put(i % 1401, i%2==0
+      for (int i = 0; i < 100_000_000; i++) {
+        cicleNumber.set(i);
+        map.put(i % 2049, i%3==0
                            ? ReferenceValue.getInstance(ReferenceType.STRONG, new byte[1024_800])
-                           : ReferenceValue.getInstance(ReferenceType.SOFT, new byte[1024_800])
-        );
+                           : ReferenceValue.getInstance(ReferenceType.SOFT, new byte[1024_800]));
+
+        if (i % 1401==0) System.gc();
         if ( i % 100 == 0) {
           try {
-            Thread.currentThread().sleep(1000);
+            Thread.currentThread().sleep(100);
           } catch (InterruptedException e) {
             throw new RuntimeException(e);
           }
@@ -305,7 +310,7 @@ public final class GCInfoCollector {
     nagibatel.start();
     while ( true ) {
       long free = (long) Runtime.getRuntime().freeMemory() / 1024 / 1024;
-      System.out.println(free);
+      System.out.println(free + " MiB on i: " + cicleNumber.get() );
       Thread.currentThread().sleep(5000);
 
       if (free>2000) {
