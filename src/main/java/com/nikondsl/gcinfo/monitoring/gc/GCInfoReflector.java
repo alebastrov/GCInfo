@@ -35,16 +35,13 @@ public class GCInfoReflector {
       return "";
     }
     if (gcInfoBlock.getDuration() > 0L) {
-      final String color;
-      if (gcInfoBlock.getGcState().ordinal() < GCInfoBlock.Payloads.HIGH_LOAD.ordinal()) {
+      String color = "grey";
+      if (gcInfoBlock.getGcState() == GCInfoBlock.Payloads.OK) {
         color = coloredUsagePercentage.getColor();
-      }
-      else if (gcInfoBlock.getGcState() == GCInfoBlock.Payloads.HIGH_LOAD) {
-        color = "grey";
       }
       else if (gcInfoBlock.getGcState() == GCInfoBlock.Payloads.SLOWDOWN) {
         color = "black";
-      } else {
+      } else if (gcInfoBlock.getGcState() == GCInfoBlock.Payloads.MEDIUM_LOAD) {
         color = "orange";
       }
       return "<img src='"+ TRANSPARENT_1X1_IMAGE_SOURCE +"' width='" + getBlockWidth(gcInfoBlock.getDuration(), GCInfoBlock.getMaxDuration())

@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import static com.nikondsl.gcinfo.monitoring.gc.ColoredUsagePercentage.GREEN;
+import static com.nikondsl.gcinfo.monitoring.gc.ColoredUsagePercentage.RED;
+import static com.nikondsl.gcinfo.monitoring.gc.ColoredUsagePercentage.YELLOW;
+
 public class GCInfo2HtmlPrinter {
 
     public String getHtml() throws Exception {
@@ -99,9 +103,9 @@ public class GCInfo2HtmlPrinter {
                 "style='border-color:gray; border-style: solid; border-width: 1px'><tr>");
         for (GCInfoBlock info :  all) {
             result.append("<td width='3' valign='bottom'>\n" +
-                    reflector.getImage(info, reflector.getBlockPixelsCount(ColoredUsagePercentage.RED, info.getMaxMemory(), info.getUsedMemory()), ColoredUsagePercentage.RED, 1) +
-                    reflector.getImage(info, reflector.getBlockPixelsCount(ColoredUsagePercentage.YELLOW, info.getMaxMemory(), info.getUsedMemory()), ColoredUsagePercentage.YELLOW, 2) +
-                    reflector.getImage(info, reflector.getBlockPixelsCount(ColoredUsagePercentage.GREEN, info.getMaxMemory(), info.getUsedMemory()), ColoredUsagePercentage.GREEN, 3) +
+                    reflector.getImage(info, reflector.getBlockPixelsCount(RED, info.getMaxMemory(), info.getUsedMemory()), RED, 1) +
+                    reflector.getImage(info, reflector.getBlockPixelsCount(YELLOW, info.getMaxMemory(), info.getUsedMemory()), YELLOW, 2) +
+                    reflector.getImage(info, reflector.getBlockPixelsCount(GREEN, info.getMaxMemory(), info.getUsedMemory()), GREEN, 3) +
                     "\n</td>");
         }
         result.append("<td width='99%' valign='bottom' colspan='3'>&nbsp;</td>");
@@ -112,13 +116,13 @@ public class GCInfo2HtmlPrinter {
         String greenBar = getExampleImage("green", "reflects small GC job");
         String smallGreenBar = getExampleImage("green", "",20, 10);
         String narrowGreenBar = getExampleImage("green", "",4, 20);
-        String blueBar = getExampleImage("blue", "reflects idle of GC", 20, 2);
+//        String blueBar = getExampleImage("blue", "reflects idle of GC", 20, 2);
         result.append("<br/><div class='gclegend' id='gclegendid'><u>GC legend</u><br/><table><tr>" +
                 "<td width='20'>"+blackBar+"</td><td>GC initiates StopTheWorld or takes too long time</td></tr>" +
                 "<tr><td width='20'>"+redBar+"</td><td>GC takes too long time and under high pressure</td></tr>" +
                 "<tr><td width='20'>"+yellowBar+"</td><td>GC is under pressure</td></tr>" +
                 "<tr><td width='20'>"+greenBar+"</td><td>GC does not a big deal amount of work</td></tr>" +
-                "<tr><td width='20' height='2'>"+blueBar+"</td><td>Blue bar reflects GC's NOP or idle</td></tr>" +
+//                "<tr><td width='20' height='2'>"+blueBar+"</td><td>Blue bar reflects GC's NOP or idle</td></tr>" +
                 "<tr><td width='4'>"+narrowGreenBar+"</td><td>Bar width depends on how long GC takes</td></tr>" +
                 "<tr><td width='20' height='10'>"+smallGreenBar+"</td><td>Bar height depends on how much memory GC freed</td></tr>" +
                 "</table></div>");

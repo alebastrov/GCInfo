@@ -1,6 +1,8 @@
 package com.nikondsl.gcinfo.monitoring.gc;
 
 import com.nikondsl.gcinfo.GCInfo2HtmlPrinter;
+import com.nikondsl.gcinfo.monitoring.gc.types.GarbageCollectors;
+import com.nikondsl.gcinfo.monitoring.gc.types.GcDetector;
 import com.sun.management.GarbageCollectionNotificationInfo;
 
 import javax.management.Notification;
@@ -17,6 +19,7 @@ import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryUsage;
 import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -132,7 +135,7 @@ public final class GCInfoCollector {
     }
   }
 
-  private static Set<String> nonGcStuff = new HashSet<>();
+  private static final Set<String> nonGcStuff = new HashSet<>();
   static {
     nonGcStuff.add("Metaspace");
     nonGcStuff.add("Compressed Class Space");
@@ -165,9 +168,9 @@ public final class GCInfoCollector {
     resInfoBlock.setMemoryUsage(
             new MemoryUsage(
                     init.get(),
-                    used.get(),//(runtime.totalMemory()-runtime.freeMemory()),
-                    committed.get(),//runtime.totalMemory(),
-                    max.get()//runtime.maxMemory()
+                    used.get(),
+                    committed.get(),
+                    max.get()
             )
     );
     if (!storage.isEmpty()) {
@@ -183,8 +186,9 @@ public final class GCInfoCollector {
     addToStorage(resInfoBlock);
   }
 
-  //split to 3 graphs - young, survivor, old
+  //@ToDo split to 3 graphs - young, survivor, old
   private void addToStorage(GCInfoBlock resInfoBlock) {
+    if (resInfoBlock.getDuration() == 0) return;
     storage.addLast(resInfoBlock);
     if (storage.size() > maxEventsCount) storage.removeFirst();
   }
@@ -202,6 +206,7 @@ public final class GCInfoCollector {
     infoBlock.setCallNumber(0);
     infoBlock.setDuration(0);
     infoBlock.setMemoryUsage(empty);
+    infoBlock.setEmpty(true);
     addToStorage(infoBlock);
   }
 
@@ -213,12 +218,12 @@ public final class GCInfoCollector {
     return storage.getLast();
   }
 
-  public synchronized int getCurentSize() {
-    return storage.size();
+  public synchronized int getCurrentSize() {
+    return getAll().size();
   }
 
   public synchronized List<GCInfoBlock> getAll() {
-    return new ArrayList<>(storage);
+    return storage.stream().filter(gcInfoBlock -> !gcInfoBlock.isEmpty()).collect(Collectors.toList());
   }
 
   public synchronized void setMaxEventsCount(int maxEventsCount) {
@@ -232,12 +237,62 @@ public final class GCInfoCollector {
     storage = newStorage;
   }
 
+  private static interface ReferenceValue<T> {
+    T getValue();
+
+    static <T> ReferenceValue<T> getInstance(ReferenceType type, T value) {
+      ReferenceValue<T> resul;
+      switch (type) {
+        case WEAK: resul = new GCInfoCollector.WeakReferenceHolder<T>(value);
+          break;
+        case SOFT: resul = new GCInfoCollector.SoftReferenceHolder<T>(value);
+          break;
+        case STRONG: resul = new GCInfoCollector.StrongReferenceHolder<T>(value);
+          break;
+        default:  throw new IllegalArgumentException();
+      };
+      return resul;
+    }
+  }
+  public enum ReferenceType{
+    WEAK, SOFT, STRONG;
+  }
+  private static class StrongReferenceHolder<T> implements ReferenceValue<T> {
+    private final T value;
+    public StrongReferenceHolder(T value) {
+      this.value = value;
+    }
+    public T getValue() {
+      return value;
+    }
+  }
+  private static class SoftReferenceHolder<T> implements ReferenceValue<T> {
+    private final SoftReference<T> value;
+    public SoftReferenceHolder(T val) {
+      value = new SoftReference<T>(val);
+    }
+    public T getValue() {
+      return value.get();
+    }
+  }
+  private static class WeakReferenceHolder<T> implements ReferenceValue<T> {
+    private final WeakReference<T> value;
+    public WeakReferenceHolder(T val) {
+      value = new WeakReference<>(val);
+    }
+    public T getValue() {
+      return value.get();
+    }
+  }
   public static void main(String[] args) throws Exception {
 //    GCInfoCollector infoCollector = GCInfoCollector.getGCInfoCollector(1000);
     Thread nagibatel = new Thread(()->{
-      Map<Integer, SoftReference<byte[]>> map = new HashMap<>();
+      Map<Integer, ReferenceValue<byte[]>> map = new HashMap<>();
       for (int i = 0; i < 100000; i++) {
-        map.put(i % 1000, new SoftReference<>(new byte[1024_800]));
+        map.put(i % 1401, i%2==0
+                           ? ReferenceValue.getInstance(ReferenceType.STRONG, new byte[1024_800])
+                           : ReferenceValue.getInstance(ReferenceType.SOFT, new byte[1024_800])
+        );
         if ( i % 100 == 0) {
           try {
             Thread.currentThread().sleep(1000);
@@ -287,11 +342,8 @@ public final class GCInfoCollector {
     return map;
   }
   GCInfoBlock.GcType guessGcType(GarbageCollectionNotificationInfo gcni) {
-    if (isConcurrentPhase(gcni.getGcCause(), gcni.getGcName())) return GCInfoBlock.GcType.CONCURRENT;
+    GarbageCollectors collector = GcDetector.get(gcni);
+    if (collector.isConcurrentPhase(gcni.getGcCause(), gcni.getGcName())) return GCInfoBlock.GcType.CONCURRENT;
     return GCInfoBlock.GcType.STW;
-  }
-  static boolean isConcurrentPhase(String cause, String name) {
-    return "No GC".equals(cause) || "Shenandoah Cycles".equals(name) || "ZGC Cycles".equals(name)
-            || (name.startsWith("GPGC") && !name.endsWith("Pauses"));
   }
 }

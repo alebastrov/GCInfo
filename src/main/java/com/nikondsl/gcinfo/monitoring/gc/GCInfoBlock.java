@@ -18,6 +18,10 @@ public class GCInfoBlock {
     this.compacted = compacted;
   }
 
+  public boolean isEmpty() {
+    return empty;
+  }
+
   public enum Payloads {
     OK(85), MEDIUM_LOAD(75), HIGH_LOAD(45), SLOWDOWN(9);
 
@@ -47,6 +51,11 @@ public class GCInfoBlock {
   private Payloads gcState = Payloads.OK;
   private double compacted=1.0;
   private GcType type = GcType.STW;
+  private boolean empty = false;
+
+  public void setEmpty(boolean empty) {
+    this.empty = empty;
+  }
 
   enum GcType {
     CONCURRENT, STW;
