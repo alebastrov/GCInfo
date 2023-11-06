@@ -1,9 +1,6 @@
 package com.nikondsl.gcinfo.monitoring.gc;
 
 
-
-
-import com.nikondsl.gcinfo.monitoring.gc.GCInfoBlock;
 import com.nikondsl.gcinfo.monitoring.gc.types.GarbageCollectors;
 import com.nikondsl.gcinfo.monitoring.gc.types.GcDetector;
 
@@ -76,11 +73,17 @@ public final class GCInfoCollector {
         }
       }
 
-//      System.err.println( "!!! phase: [" + gcAction + "]" );
+      System.err.println( "!!! phase: [" + gcAction + "]" );
     }
 
     private GCInfoBlock createInfoBlock2( CompositeData cdata, CompositeDataSupport compositeData ) {
-      Long duration = ( Long ) compositeData.get( "duration" );
+      Long duration = 0L;
+      if ( compositeData.containsKey( "duration" ) ) {
+        duration = (Long) compositeData.get("duration");
+      } else if ( compositeData.containsKey( "startTime" ) &&  compositeData.containsKey( "endTime" ) ) {
+        //G1GC
+        duration =  ( Long ) compositeData.get( "endTime" ) - ( Long ) compositeData.get( "startTime" );
+      }
       if ( duration <= 0L ) {
         return null;
       }
@@ -90,9 +93,20 @@ public final class GCInfoCollector {
       final GCInfoBlock infoBlock = new GCInfoBlock();
       infoBlock.setGCName( mbeanName );
       infoBlock.setTime( curTime );
-      infoBlock.setCallNumber( ( Long ) compositeData.get( "id" ) );
+      if ( compositeData.containsKey( "id" ) ) {
+        infoBlock.setCallNumber((Long) compositeData.get("id"));
+      } else if ( compositeData.containsKey( "index" ) ) {
+        //G1GC
+        infoBlock.setCallNumber((Long) compositeData.get("index"));
+      }
       infoBlock.setDuration( duration );
-      TabularDataSupport tds = ( TabularDataSupport ) compositeData.get( "memoryUsageAfterGc" );
+      TabularDataSupport tds = null;
+      if ( compositeData.containsKey( "usageBeforeGc" ) ) {
+        tds = ( TabularDataSupport ) compositeData.get( "usageAfterGc" );
+      } else if ( compositeData.containsKey( "memoryUsageBeforeGc" ) ) {
+        //G1GC
+        tds = ( TabularDataSupport ) compositeData.get( "memoryUsageAfterGc" );
+      }
       infoBlock.setMemoryUsage( getSumOfMemoryUsages( tds ) );
       return infoBlock;
     }
