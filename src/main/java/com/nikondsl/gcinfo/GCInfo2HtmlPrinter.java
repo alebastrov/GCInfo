@@ -3,16 +3,17 @@ package com.nikondsl.gcinfo;
 import com.nikondsl.gcinfo.convertions.ConvertionUtils;
 import com.nikondsl.gcinfo.convertions.ConvertorType;
 import com.nikondsl.gcinfo.date.DateUtils;
-import com.nikondsl.gcinfo.monitoring.gc.ColoredUsagePercentage;
 import com.nikondsl.gcinfo.monitoring.gc.GCInfoBlock;
 import com.nikondsl.gcinfo.monitoring.gc.GCInfoCollector;
 import com.nikondsl.gcinfo.monitoring.gc.GCInfoReflector;
 
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
+import java.nio.file.Path;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import static com.nikondsl.gcinfo.monitoring.gc.ColoredUsagePercentage.GREEN;
 import static com.nikondsl.gcinfo.monitoring.gc.ColoredUsagePercentage.RED;
@@ -22,7 +23,7 @@ public class GCInfo2HtmlPrinter {
 
     public String getHtml() throws Exception {
 
-        GCInfoCollector collector = GCInfoCollector.getGCInfoCollector(TimeUnit.SECONDS.toMillis(10));
+        GCInfoCollector collector = GCInfoCollector.getGCInfoCollector();
         List<GCInfoBlock> all = collector.getAll();
         GCInfoReflector reflector = new GCInfoReflector();
 
@@ -140,23 +141,28 @@ public class GCInfo2HtmlPrinter {
     }
 
     public static void main(String[] args) throws Exception {
-        GCInfoCollector.getGCInfoCollector(TimeUnit.SECONDS.toMillis(10));
-        for(int j = 0; j< 1000; j++) {
-            int max = 100;
-            double[][] arr = new double[max][];
-            for (int i = 0; i < max; i++) {
-                arr[i] = new double[100000];
-                Thread.sleep(10);
+        GCInfoCollector.getGCInfoCollector();
+        new Thread( () -> {
+            try {
+                GCInfoCollector.main(args);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-            System.err.println(j);
-            arr = null;
+        }).start();
+        Thread.sleep(5_000 );
 
-            Thread.sleep(100);
+        for(int j = 0; j< 1000; j++) {
             GCInfo2HtmlPrinter printer = new GCInfo2HtmlPrinter();
-            System.gc();
-            if (j%16==0) {
-                System.err.println("<html><body>" + printer.getHtml() + "</body></html>");
+            if (j%16 == 0) {
+                System.out.println(".");
+                String s = "<html><body>" + printer.getHtml() + "</body></html>";
+                Path path = Path.of("/Users/mac/tmp/" + (j + 10000) + ".html");
+                FileWriter fileWriter = new FileWriter(path.toFile().getAbsolutePath());
+                PrintWriter printWriter = new PrintWriter(fileWriter);
+                printWriter.print(s);
+                printWriter.close();
             }
+            Thread.sleep(1000);
         }
     }
 }

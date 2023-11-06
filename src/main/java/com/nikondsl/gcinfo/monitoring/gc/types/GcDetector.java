@@ -1,17 +1,16 @@
 package com.nikondsl.gcinfo.monitoring.gc.types;
 
-import com.sun.management.GarbageCollectionNotificationInfo;
-
+import javax.management.openmbean.CompositeData;
 import java.util.Objects;
 
 public class GcDetector {
-    public static GarbageCollectors get(GarbageCollectionNotificationInfo gcni) {
-        Objects.requireNonNull(gcni);
-        if (gcni.getGcCause().contains("Shenandoah")) return new Shenandoah();
-        if (gcni.getGcCause().contains("G1")) return new G1();
-        if (gcni.getGcName().startsWith("ZGC ")) return new ZGC();
-        if (gcni.getGcName().equals("PS Scavenge") ||
-            gcni.getGcName().equals("PS MarkSweep")) {
+    public static GarbageCollectors get( CompositeData compositeData ) {
+        Objects.requireNonNull( compositeData );
+        String name = ( String ) compositeData.get( "gcName" );
+        if ( name.startsWith( "Shenandoah" ) ) return new Shenandoah();
+        if ( name.startsWith( "G1" ) ) return new G1();
+        if ( name.startsWith( "ZGC " ) ) return new ZGC();
+        if ( "PS Scavenge".equals( name ) || "PS MarkSweep".equals( name ) ) {
             return new ParallelGc();
         }
         return new CMS();
