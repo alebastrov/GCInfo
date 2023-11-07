@@ -1,6 +1,9 @@
 package com.nikondsl.gcinfo.monitoring.gc.types;
 
-//-XX:-UseZGC
+import javax.management.openmbean.CompositeData;
+import javax.management.openmbean.TabularDataSupport;
+
+//-XX:+UseZGC
 public class ZGC implements GarbageCollectors {
     @Override
     public boolean isConcurrentPhase( String cause, String name ) {
@@ -9,5 +12,12 @@ public class ZGC implements GarbageCollectors {
 
     public String[] getNames() {
         return new String[] { "ZHeap" };
+    }
+
+    public TabularDataSupport getUsageAfterGc( CompositeData cdata ) {
+        if ( cdata.containsKey( "memoryUsageAfterGc" ) ) {
+            return ( TabularDataSupport ) cdata.get( "memoryUsageAfterGc" );
+        }
+        return null;
     }
 }

@@ -11,10 +11,10 @@ import java.lang.management.MemoryUsage;
  */
 public class GCInfoBlock {
   public double getCompacted() {
-    return 2.0+2.0*Math.log(compacted);
+    return 2.0 + 2.0 * Math.log( compacted );
   }
 
-  public void setCompacted(double compacted) {
+  public void setCompacted( double compacted ) {
     this.compacted = compacted;
   }
 
@@ -23,24 +23,28 @@ public class GCInfoBlock {
   }
 
   public enum Payloads {
-    OK(85), MEDIUM_LOAD(75), HIGH_LOAD(45), SLOWDOWN(9);
+    OK( 85 ),
+    MEDIUM_LOAD( 75 ),
+    HIGH_LOAD( 45 ),
+    SLOWDOWN( 9 );
 
     private int userLoadInPercents;
 
-    Payloads(int userLoadInPercents) {
+    Payloads( int userLoadInPercents ) {
       this.userLoadInPercents = userLoadInPercents;
     }
 
-    static Payloads getByLoad(int currentUsagePercent) {
-      if (currentUsagePercent <= 0) return SLOWDOWN;
-      if (currentUsagePercent >= 100) return OK;
-      for (Payloads payload : values()) {
-        if (payload.userLoadInPercents > currentUsagePercent) continue;
+    static Payloads getByLoad( int currentUsagePercent ) {
+      if ( currentUsagePercent <= 0 ) return SLOWDOWN;
+      if ( currentUsagePercent >= 100 ) return OK;
+      for ( Payloads payload : values() ) {
+        if ( payload.userLoadInPercents > currentUsagePercent ) continue;
         return payload;
       }
       return OK;
     }
   }
+
   private static long maxDuration = 200L;
 
   private String gcName = "";
@@ -49,16 +53,16 @@ public class GCInfoBlock {
   private long callNumber;
   private long duration;
   private Payloads gcState = Payloads.OK;
-  private double compacted=1.0;
+  private double compacted = 1.0;
   private GcType type = GcType.STW;
   private boolean empty = false;
 
-  public void setEmpty(boolean empty) {
+  public void setEmpty( boolean empty ) {
     this.empty = empty;
   }
 
   enum GcType {
-    CONCURRENT, STW;
+    CONCURRENT, STW
   }
 
   public GCInfoBlock() {
@@ -68,19 +72,19 @@ public class GCInfoBlock {
     return type;
   }
 
-  public void setType(GcType type) {
+  public void setType( GcType type ) {
     this.type = type;
   }
 
-  public void setGCName(String gcName) {
+  public void setGCName( String gcName ) {
     this.gcName = gcName;
   }
 
-  public void setTime(long time) {
+  public void setTime( long time ) {
     this.time = time;
   }
 
-  public void setMemoryUsage(MemoryUsage memoryUsage) {
+  public void setMemoryUsage( MemoryUsage memoryUsage ) {
     this.memoryUsage = memoryUsage;
   }
 
@@ -112,7 +116,7 @@ public class GCInfoBlock {
     return memoryUsage.getMax();
   }
 
-  public void setCallNumber(long callNumber) {
+  public void setCallNumber( long callNumber ) {
     this.callNumber = callNumber;
   }
 
@@ -120,8 +124,8 @@ public class GCInfoBlock {
     return callNumber;
   }
 
-  public void setDuration(long duration) {
-    this.duration = duration;
+  public void setDuration( Long duration ) {
+    this.duration = duration == null ? 0 : duration;
   }
 
   public long getDuration() {
@@ -136,7 +140,7 @@ public class GCInfoBlock {
     return gcState;
   }
 
-  public void setGcState(Payloads gcState) {
+  public void setGcState( Payloads gcState ) {
     this.gcState = gcState;
   }
 }

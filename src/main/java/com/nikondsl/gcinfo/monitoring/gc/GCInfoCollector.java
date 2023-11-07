@@ -48,16 +48,15 @@ public final class GCInfoCollector {
       String gcAction = ( String ) cdata.get( "gcAction" );
       CompositeDataSupport gcni = ( CompositeDataSupport ) cdata.get( "gcInfo" );
       if ( "end of minor GC".equals( gcAction ) ) {
-        GCInfoBlock infoBlock = createInfoBlock2( cdata, gcni );
+        GCInfoBlock infoBlock = createInfoBlock( cdata, gcni );
         if ( infoBlock == null ) return;
         infoBlock.setType( guessGcType( cdata ) );
         addGc( infoBlock );
         return;
       }
       if ( "end of major GC".equals( gcAction ) ) {
-        GCInfoBlock infoBlock = createInfoBlock2( cdata, gcni );
-        if ( infoBlock == null ) addEmpty( infoBlock.getDuration() );
-        else {
+        GCInfoBlock infoBlock = createInfoBlock( cdata, gcni );
+        if ( infoBlock != null ) {
           infoBlock.setType( guessGcType( cdata ) );
           addGc( infoBlock );
         }
@@ -65,48 +64,24 @@ public final class GCInfoCollector {
       }
       if ( "end of GC pause".equals( gcAction ) || "end of GC cycle".equals( gcAction ) ) {
         //shenandoah minor gc | concurrent
-        GCInfoBlock infoBlock = createInfoBlock2( cdata, gcni );
-        if ( infoBlock == null ) addEmpty( ( Long ) gcni.get( "duration" ) );
-        else {
+        GCInfoBlock infoBlock = createInfoBlock( cdata, gcni );
+        if ( infoBlock != null ) {
           infoBlock.setType( guessGcType( cdata ) );
           addGc( infoBlock );
         }
       }
-
-      System.err.println( "!!! phase: [" + gcAction + "]" );
     }
 
-    private GCInfoBlock createInfoBlock2( CompositeData cdata, CompositeDataSupport compositeData ) {
-      Long duration = 0L;
-      if ( compositeData.containsKey( "duration" ) ) {
-        duration = (Long) compositeData.get("duration");
-      } else if ( compositeData.containsKey( "startTime" ) &&  compositeData.containsKey( "endTime" ) ) {
-        //G1GC
-        duration =  ( Long ) compositeData.get( "endTime" ) - ( Long ) compositeData.get( "startTime" );
-      }
-      if ( duration <= 0L ) {
-        return null;
-      }
-      long curTime = System.currentTimeMillis();
-      String mbeanName = ( String ) cdata.get( "gcName" );
-
+    private GCInfoBlock createInfoBlock( CompositeData cdata, CompositeDataSupport compositeData ) {
+      GarbageCollectors collector = GcDetector.get( cdata );
+      String mbeanName = collector.getName( cdata );
       final GCInfoBlock infoBlock = new GCInfoBlock();
+      infoBlock.setDuration( collector.getDuration( compositeData ) );
+      if ( infoBlock.getDuration() == 0 ) return null;
       infoBlock.setGCName( mbeanName );
-      infoBlock.setTime( curTime );
-      if ( compositeData.containsKey( "id" ) ) {
-        infoBlock.setCallNumber((Long) compositeData.get("id"));
-      } else if ( compositeData.containsKey( "index" ) ) {
-        //G1GC
-        infoBlock.setCallNumber((Long) compositeData.get("index"));
-      }
-      infoBlock.setDuration( duration );
-      TabularDataSupport tds = null;
-      if ( compositeData.containsKey( "usageBeforeGc" ) ) {
-        tds = ( TabularDataSupport ) compositeData.get( "usageAfterGc" );
-      } else if ( compositeData.containsKey( "memoryUsageBeforeGc" ) ) {
-        //G1GC
-        tds = ( TabularDataSupport ) compositeData.get( "memoryUsageAfterGc" );
-      }
+      infoBlock.setTime( System.currentTimeMillis() );
+      infoBlock.setCallNumber( collector.getId( compositeData ) );
+      TabularDataSupport tds = collector.getUsageAfterGc( compositeData );
       infoBlock.setMemoryUsage( getSumOfMemoryUsages( tds ) );
       return infoBlock;
     }
@@ -189,23 +164,6 @@ public final class GCInfoCollector {
     if ( storage.size() > maxEventsCount ) storage.removeFirst();
   }
 
-  @Deprecated
-  private void addEmpty( long curTime ) {
-    GCInfoBlock last = !storage.isEmpty() ? storage.getLast() : null;
-    if ( last != null && last.getCallNumber() == 0 && last.getDuration() == 0 ) {
-      last.setCompacted( last.getCompacted() + 1 );
-      return;
-    }
-    final GCInfoBlock infoBlock = new GCInfoBlock();
-    infoBlock.setGCName( "--" );
-    infoBlock.setTime( curTime );
-    infoBlock.setCallNumber( 0 );
-    infoBlock.setDuration( 0 );
-    infoBlock.setMemoryUsage( empty );
-    infoBlock.setEmpty( true );
-    addToStorage( infoBlock );
-  }
-
   public GCInfoBlock.Payloads getLastGcState() {
     return lastGcState;
   }
@@ -250,9 +208,11 @@ public final class GCInfoCollector {
       return resul;
     }
   }
+
   public enum ReferenceType {
     WEAK, SOFT, STRONG
   }
+
   private static class StrongReferenceHolder<T> implements ReferenceValue<T> {
     private final T value;
     StrongReferenceHolder( T value ) {
@@ -262,6 +222,7 @@ public final class GCInfoCollector {
       return value;
     }
   }
+
   private static class SoftReferenceHolder<T> implements ReferenceValue<T> {
     private final SoftReference<T> value;
     SoftReferenceHolder( T val ) {
@@ -271,6 +232,7 @@ public final class GCInfoCollector {
       return value.get();
     }
   }
+
   private static class WeakReferenceHolder<T> implements ReferenceValue<T> {
     private final WeakReference<T> value;
     WeakReferenceHolder( T val ) {

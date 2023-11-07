@@ -156,7 +156,7 @@ public class GCInfo2HtmlPrinter {
             if (j%16 == 0) {
                 System.out.println(".");
                 String s = "<html><body>" + printer.getHtml() + "</body></html>";
-                Path path = Path.of("/home/igor/tmp/" + (j + 10000) + ".html");
+                Path path = Path.of("/Users/mac/tmp/" + (j + 10000) + ".html");
                 FileWriter fileWriter = new FileWriter(path.toFile().getAbsolutePath());
                 PrintWriter printWriter = new PrintWriter(fileWriter);
                 printWriter.print(s);
