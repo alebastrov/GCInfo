@@ -1,8 +1,9 @@
 package com.nikondsl.gcinfo.monitoring.gc;
 
 
-import com.nikondsl.gcinfo.monitoring.gc.types.GarbageCollectors;
-import com.nikondsl.gcinfo.monitoring.gc.types.GcDetector;
+import com.nikondsl.gcinfo.monitoring.gc.types.GarbageCollector;
+import com.nikondsl.gcinfo.monitoring.gc.types.GcType;
+import com.nikondsl.gcinfo.monitoring.gc.types.HeapGeneration;
 
 import javax.management.Notification;
 import javax.management.NotificationEmitter;
@@ -26,7 +27,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 
 public final class GCInfoCollector {
-  private static final MemoryUsage empty = new MemoryUsage( 1, 1, 1, 1 );
+  public static final String GC_CAUSE = "gcCause";
+  public static final String GC_NAME = "gcName";
   private static GCInfoCollector instance;
 
   private int maxEventsCount = 300;
@@ -50,35 +52,34 @@ public final class GCInfoCollector {
       if ( "end of minor GC".equals( gcAction ) ) {
         GCInfoBlock infoBlock = createInfoBlock( cdata, gcni );
         if ( infoBlock == null ) return;
-        infoBlock.setType( guessGcType( cdata ) );
         addGc( infoBlock );
         return;
       }
       if ( "end of major GC".equals( gcAction ) ) {
         GCInfoBlock infoBlock = createInfoBlock( cdata, gcni );
         if ( infoBlock != null ) {
-          infoBlock.setType( guessGcType( cdata ) );
           addGc( infoBlock );
         }
         return;
       }
-      if ( "end of GC pause".equals( gcAction ) || "end of GC cycle".equals( gcAction ) ) {
-        //shenandoah minor gc | concurrent
+      if ( "end of GC pause".equals( gcAction )
+          || "end of GC cycle".equals( gcAction ) ) {
         GCInfoBlock infoBlock = createInfoBlock( cdata, gcni );
         if ( infoBlock != null ) {
-          infoBlock.setType( guessGcType( cdata ) );
           addGc( infoBlock );
         }
       }
     }
 
     private GCInfoBlock createInfoBlock( CompositeData cdata, CompositeDataSupport compositeData ) {
-      GarbageCollectors collector = GcDetector.get( cdata );
-      String mbeanName = collector.getName( cdata );
+      GarbageCollector collector = GcType.get( cdata ).get();
       final GCInfoBlock infoBlock = new GCInfoBlock();
       infoBlock.setDuration( collector.getDuration( compositeData ) );
       if ( infoBlock.getDuration() == 0 ) return null;
+      String mbeanName = GarbageCollector.getName( cdata );
       infoBlock.setGCName( mbeanName );
+      infoBlock.setType( guessStopTheWorldPhase( cdata ) );
+      infoBlock.setHeapGeneration( HeapGeneration.detect( mbeanName ) );
       infoBlock.setTime( System.currentTimeMillis() );
       infoBlock.setCallNumber( collector.getId( compositeData ) );
       TabularDataSupport tds = collector.getUsageAfterGc( compositeData );
@@ -243,9 +244,13 @@ public final class GCInfoCollector {
     }
   }
 
-  GCInfoBlock.GcType guessGcType( CompositeData cdata ) {
-    GarbageCollectors collector = GcDetector.get( cdata );
-    if ( collector.isConcurrentPhase( ( String ) cdata.get( "gcCause" ), ( String ) cdata.get( "gcName" ) ) ) return GCInfoBlock.GcType.CONCURRENT;
+  GCInfoBlock.GcType guessStopTheWorldPhase( CompositeData cdata ) {
+    GarbageCollector collector = GcType.get( cdata ).get();
+    String cause = ( String ) cdata.get( GC_CAUSE );
+    String name = ( String ) cdata.get( GC_NAME );
+    if ( collector.isConcurrentPhase( cause, name ) ) {
+      return GCInfoBlock.GcType.CONCURRENT;
+    }
     return GCInfoBlock.GcType.STW;
   }
 
@@ -259,8 +264,8 @@ public final class GCInfoCollector {
       for ( int i = 0; i < 100_000_000; i++ ) {
         cicleNumber.set( i );
         map.put( i % 2049, i % 3 == 0
-                ? ReferenceValue.getInstance( ReferenceType.STRONG, new byte[1024_800] )
-                : ReferenceValue.getInstance( ReferenceType.SOFT, new byte[1024_800] ) );
+            ? ReferenceValue.getInstance( ReferenceType.STRONG, new byte[1024_800] )
+            : ReferenceValue.getInstance( ReferenceType.SOFT, new byte[1024_800] ) );
 
         if ( i % 1401 == 0 ) System.gc();
         if ( i % 100 == 0 ) {
