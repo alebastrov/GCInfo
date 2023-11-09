@@ -264,7 +264,7 @@ public final class GCInfoCollector {
     GCInfoCollector.getGCInfoCollector();
     Thread nagibatel = new Thread( () -> {
       Map<Integer, ReferenceValue<byte[]>> map = new HashMap<>();
-      for ( int i = 0; i < 1; i++ ) {
+      for ( int i = 0; i < 1_000_000; i++ ) {
         cicleNumber.set( i );
         map.put( i % 2049, i % 3 == 0
             ? ReferenceValue.getInstance( ReferenceType.STRONG, new byte[1024_800] )
