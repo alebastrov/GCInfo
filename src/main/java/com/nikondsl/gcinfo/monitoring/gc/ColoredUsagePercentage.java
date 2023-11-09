@@ -1,7 +1,9 @@
 package com.nikondsl.gcinfo.monitoring.gc;
 
 public enum ColoredUsagePercentage {
-    GREEN("green", 50, 0), YELLOW("yellow", 40, 50), RED("red", 10, 90);
+    GREEN("green", 50, 0),
+    YELLOW("yellow", 40, 50),
+    RED("red", 10, 90);
     private int percents;
     private int eliminator;
     private String color;

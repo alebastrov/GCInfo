@@ -157,13 +157,13 @@ public class GCInfo2HtmlPrinter {
             if (j%16 == 0) {
                 System.out.println(".");
                 String s = "<html><body>" + printer.getHtml() + "</body></html>";
-                Path path = new File("/Users/mac/tmp/" + (j + 10000) + ".html").toPath();
+                Path path = Path.of("/home/tmp/" + (j + 10000) + ".html");
                 FileWriter fileWriter = new FileWriter(path.toFile().getAbsolutePath());
                 PrintWriter printWriter = new PrintWriter(fileWriter);
                 printWriter.print(s);
                 printWriter.close();
             }
-            Thread.sleep(1000);
+            Thread.sleep(5000);
         }
     }
 }
