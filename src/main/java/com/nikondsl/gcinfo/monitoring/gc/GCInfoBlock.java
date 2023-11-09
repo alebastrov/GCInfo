@@ -149,4 +149,19 @@ public class GCInfoBlock {
   public void setHeapGeneration( HeapGeneration heapGeneration ) {
     this.heapGeneration = heapGeneration;
   }
+
+  @Override
+  public String toString() {
+    return "GCInfoBlock{" +
+            "heapGeneration=" + heapGeneration +
+            ", gcName='" + gcName + '\'' +
+            ", time=" + time +
+            ", memoryUsage=" + memoryUsage +
+            ", callNumber=" + callNumber +
+            ", duration=" + duration +
+            ", gcState=" + gcState +
+            ", compacted=" + compacted +
+            ", type=" + type +
+            '}';
+  }
 }

@@ -25,6 +25,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static java.util.stream.Collectors.toList;
+
 
 public final class GCInfoCollector {
   public static final String GC_CAUSE = "gcCause";
@@ -92,6 +94,7 @@ public final class GCInfoCollector {
   static {
     nonGcStuff.add( "Metaspace" );
     nonGcStuff.add( "Compressed Class Space" );
+    nonGcStuff.add( "Code Cache" );
     nonGcStuff.add( "CodeHeap 'non-profiled nmethods'" );
     nonGcStuff.add( "CodeHeap 'profiled nmethods'" );
     nonGcStuff.add( "CodeHeap 'non-nmethods'" );
@@ -105,7 +108,7 @@ public final class GCInfoCollector {
 
     tds.forEach( ( k, v ) -> {
       String gcInfoEventName = ( String ) ( ( List ) k ).get( 0 );
-      if ( nonGcStuff.contains( gcInfoEventName ) ) return; //skip all non GC stuff
+      if ( nonGcStuff.contains( gcInfoEventName ) ) return;
       MemoryUsage memoryUsage = MemoryUsage.from( ( CompositeData ) ( ( CompositeDataSupport ) v ).get( "value" ) );
       init.addAndGet( memoryUsage.getInit() );
       used.addAndGet( memoryUsage.getUsed() );
@@ -178,7 +181,7 @@ public final class GCInfoCollector {
   }
 
   public synchronized List<GCInfoBlock> getAll() {
-    return storage.stream().filter( gcInfoBlock -> !gcInfoBlock.isEmpty() ).toList();
+    return storage.stream().filter( gcInfoBlock -> !gcInfoBlock.isEmpty() ).collect( toList() );
   }
 
   public synchronized void setMaxEventsCount( int maxEventsCount ) {
@@ -261,7 +264,7 @@ public final class GCInfoCollector {
     GCInfoCollector.getGCInfoCollector();
     Thread nagibatel = new Thread( () -> {
       Map<Integer, ReferenceValue<byte[]>> map = new HashMap<>();
-      for ( int i = 0; i < 100_000_000; i++ ) {
+      for ( int i = 0; i < 1; i++ ) {
         cicleNumber.set( i );
         map.put( i % 2049, i % 3 == 0
             ? ReferenceValue.getInstance( ReferenceType.STRONG, new byte[1024_800] )
